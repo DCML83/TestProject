@@ -1,7 +1,7 @@
 //app/models/user.js
 //load modules
 
-var moongose = require('mongoose');
+var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
 //define the schema for the user model
@@ -36,7 +36,7 @@ var userSchema = mongoose.Schema({
 // generating a hash
 
 userSchema.methods.generateHash = function(password) {
-	return bcrypt.hashSync(password, bcrypt.getSaltSync(8), null);
+	return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
 // checking if password is valid
