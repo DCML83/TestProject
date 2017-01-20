@@ -32,46 +32,9 @@ var userSchema = mongoose.Schema({
 	}
 });
 
-var profileSchema = mongoose.Schema({
-	/*id: {
-		type: Number, 
-		required: true
-	},
-	*/
-	name: { 
-		first: {
-			type: String,
-			required: true
-		},
-		last: {
-			type: String, 
-			required: true
-		}
-	},
-	bdate : {
-		type: Date,
-		required: true
-	},
-	
-	image: {
-		type: String,
-		default: 'images/user.png'
-	},
-	login: {
-		email:{
-			type: String
-		},
-		password:{
-			type: String
-		}
-	}, 
-	friends:{
-		type:[String], 
-	},
-	
-});
 
-var User = mongoose.model('User', userSchema);
+
+//var User = mongoose.model('User', userSchema);
 // methods
 // generating a hash
 
@@ -85,7 +48,7 @@ userSchema.methods.validPassword = function(password){
 };
 
 // create the model for users and expose it to the app
-//module.exports = mongoose.model('User', userSchema);
-module.exports = {User: User};
+module.exports = mongoose.model('User', userSchema);
+//module.exports = {User: User};
 
 //module.exports = mongoose.model('Profile', profileSchema);
