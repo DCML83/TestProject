@@ -2,41 +2,77 @@
 //load modules
 
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
-var ObjectId = Schema.Types.ObjectId;
 
 //define the schema for the user model
 
 var userSchema = mongoose.Schema({
-	login: {
-		local	: {
-			email	: String,
-			password: String,
-		},
+
+	local	: {
+		email	: String,
+		password: String,
 	},
+	facebook	:{
+		id	: String,
+		token	: String,
+		email	: String,
+		name	: String
+	},
+	twitter		:{
+		id	: String,
+		token	: String,
+		displayName: String,
+		username: String
+	},
+	google		:{
+		id	:String,
+		token	:String,
+		email	:String,
+		name	:String
+	}
+});
+
+var profileSchema = mongoose.Schema({
+	/*id: {
+		type: Number, 
+		required: true
+	},
+	*/
 	name: { 
 		first: {
 			type: String,
-			//required: true
+			required: true
 		},
 		last: {
 			type: String, 
-			//required: true
+			required: true
 		}
 	},
 	bdate : {
 		type: Date,
-		//required: true
+		required: true
 	},
+	
 	image: {
 		type: String,
 		default: 'images/user.png'
 	},
+	login: {
+		email:{
+			type: String
+		},
+		password:{
+			type: String
+		}
+	}, 
+	friends:{
+		type:[String], 
+	},
 	
-	friends:[{type : ObjectId, ref: 'User' }]
 });
 
+
+var Profile = mongoose.model('Profile', profileSchema);
 // methods
 // generating a hash
 
@@ -53,7 +89,8 @@ userSchema.methods.validPassword = function(password){
 //module.exports = mongoose.model('User', userSchema);
 var User = mongoose.model('User', userSchema);
 
-exports.User = User;
-
+module.exports = {User: User,
+				Profile: Profile
+		};
 
 //module.exports = mongoose.model('Profile', profileSchema);
