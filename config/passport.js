@@ -41,18 +41,23 @@ module.exports = function(passport) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
+        
         User.findOne({ 'local.email' :  email }, function(err, user) {
             // if there are any errors, return the error before anything else
             if (err)
                 return done(err);
-
+           
             // if no user is found, return the message
             if (!user)
                 return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
 
             // if the user is found but the password is wrong
             if (!user.validPassword(password))
-                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'+user.local.active)); // create the loginMessage and save it to session as flashdata
+            
+            // if the user's account is not activate
+            if(!user.local.active)
+                 return done(null,false,req.flash('loginMessage', 'Account is not actve'));
 
             // all is well, return successful user
             return done(null, user);

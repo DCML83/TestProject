@@ -17,7 +17,8 @@
     "body-parser": "latest",
     "cookie-parser": "latest",
     "method-override": "latest",
-    "express-session": "latest"
+    "express-session": "latest",
+    "Nodemailer":"v0.7.1"
   },
   "scripts": {
     "start": "node server.js"
