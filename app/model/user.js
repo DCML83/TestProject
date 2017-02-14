@@ -11,19 +11,25 @@ var userSchema = mongoose.Schema({
 	local	: {
 		email	: String,
 		password: String,
-		active:{type:Boolean, default:false}
 	},
-	facebook	:{
-		id	: String,
-		token	: String,
-		email	: String,
-		name	: String
+	name: { 
+		first: {
+			type: String,
+			//required: true
+		},
+		last: {
+			type: String, 
+			//required: true
+		}
 	},
-	twitter		:{
-		id	: String,
-		token	: String,
-		displayName: String,
-		username: String
+	bdate : {
+		type: Date,
+		//required: true
+	},
+	
+	image: {
+		type: String,
+		default: 'images/user.png'
 	},
 	google		:{
 		id	:String,
@@ -31,48 +37,10 @@ var userSchema = mongoose.Schema({
 		email	:String,
 		name	:String
 	},
-	friends:[{type : ObjectId, ref: 'User' }]
-});
-
-var profileSchema = mongoose.Schema({
-	/*id: {
-		type: Number, 
-		required: true
-	},
-	*/
-	name: { 
-		first: {
-			type: String,
-			required: true
-		},
-		last: {
-			type: String, 
-			required: true
-		}
-	},
-	bdate : {
-		type: Date,
-		required: true
-	},
-	
-	image: {
-		type: String,
-		default: 'images/user.png'
-	},
-	login: {
-		email:{
-			type: String
-		},
-		password:{
-			type: String
-		}
-	}, 
-	friends:[{type : ObjectId, ref: 'User' }]
-	
+	//friends:[{type : ObjectId, ref: 'User' }]
 });
 
 
-var Profile = mongoose.model('Profile', profileSchema);
 // methods
 // generating a hash
 
@@ -84,16 +52,10 @@ userSchema.methods.generateHash = function(password) {
 userSchema.methods.validPassword = function(password){
 	return bcrypt.compareSync(password, this.local.password);
 };
-// //checking if it is active
-// userSchema.metods.checkActive = function(){
-// 	return this.local.active;
-// };
+
 // create the model for users and expose it to the app
-//module.exports = mongoose.model('User', userSchema);
+
 var User = mongoose.model('User', userSchema);
 
-module.exports = {User: User,
-				Profile: Profile
-		};
+module.exports = {User: User};
 
-//module.exports = mongoose.model('Profile', profileSchema);
