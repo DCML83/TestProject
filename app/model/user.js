@@ -13,10 +13,6 @@ var userSchema = mongoose.Schema({
 		password: String,
 		active:{type:Boolean, default:false}
 	},
-	bdate : {
-		type: String,
-		required: true
-	},
 	facebook	:{
 		id	: String,
 		token	: String,
