@@ -12,6 +12,10 @@ var userSchema = mongoose.Schema({
 		email	: String,
 		password: String,
 	},
+	bdate : {
+		type: String,
+		required: true
+	},
 	facebook	:{
 		id	: String,
 		token	: String,
@@ -29,7 +33,8 @@ var userSchema = mongoose.Schema({
 		token	:String,
 		email	:String,
 		name	:String
-	}
+	},
+	friends:[{type : ObjectId, ref: 'User' }]
 });
 
 var profileSchema = mongoose.Schema({
@@ -65,9 +70,7 @@ var profileSchema = mongoose.Schema({
 			type: String
 		}
 	}, 
-	friends:{
-		type:[String], 
-	},
+	friends:[{type : ObjectId, ref: 'User' }]
 	
 });
 
