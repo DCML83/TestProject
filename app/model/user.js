@@ -3,7 +3,7 @@
 
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
-
+var ObjectId = require('mongodb').ObjectID;
 //define the schema for the user model
 
 var userSchema = mongoose.Schema({
@@ -31,13 +31,8 @@ var userSchema = mongoose.Schema({
 		type: String,
 		default: 'images/user.png'
 	},
-	google		:{
-		id	:String,
-		token	:String,
-		email	:String,
-		name	:String
-	},
-	//friends:[{type : ObjectId, ref: 'User' }]
+	
+	friends:[{type : ObjectId, ref: 'User' }]
 });
 
 
