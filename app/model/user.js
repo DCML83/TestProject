@@ -3,38 +3,41 @@
 
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
-var ObjectId = require('mongodb').ObjectID;
+var ObjectId = mongoose.Schema.Types.ObjectId;
 //define the schema for the user model
 
 var userSchema = mongoose.Schema({
 
 	local	: {
-		email	: String,
+		email: { 
+			type: String,
+			unique: true,
+		},
 		password: String,
 	},
-	name: { 
-		first: {
-			type: String,
-			//required: true
-		},
-		last: {
-			type: String, 
-			//required: true
-		}
-	},
-	bdate : {
-		type: Date,
-		//required: true
-	},
-	
-	image: {
-		type: String,
-		default: 'images/user.png'
-	},
-	
+	// shift this to profile after testing
 	friends:[{type : ObjectId, ref: 'User' }]
 });
 
+var profileSchema = mongoose.Schema({
+	name: {
+		first: { type: String},
+		last: { type: String}
+	},
+	address: {type: String},
+	birthDate: Date, 
+	image: {
+		type: String, 
+		default: 'images/user.png'
+	},
+	
+	friends: {
+		accepted: [{type: ObjectId, ref: 'User'}],
+		pending: [{type: ObjectId, ref: 'User'}]
+	},
+	login : [{type: ObjectId, ref: 'userSchema'}]
+	
+});
 
 // methods
 // generating a hash
