@@ -64,7 +64,36 @@ module.exports = function(passport) {
         });
 
     }));
+    function checkPassword(str)
+  {
+    var re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    return re.test(str);
+  };
 
+  function checkUserPassword(username,password)
+  {
+    if(username == "") {
+      //alert("Error: Username cannot be blank!");
+      return false;
+    }
+    re = /^\w+$/;
+    if(!re.test(username)) {
+      //alert("Error: Username must contain only letters, numbers and underscores!");
+      //form.username.focus();
+      return false;
+    }
+    if(password != "") {
+      if(!checkPassword(password)) {
+        //alert("The password you have entered is not valid!");
+        return false;
+      }
+    } else {
+     // alert("Error: Please check that you've entered and confirmed your password!");
+     // form.pwd1.focus();
+      return false;
+    }
+    return true;
+  };
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'email',
@@ -92,7 +121,7 @@ module.exports = function(passport) {
                 // if there is no user with that email
                 // create the user
                 var newUser            = new User();
-
+               // if(checkUserPassword(email,password)){
                 // set the user's local credentials
                 newUser.local.email    = email;
                 newUser.local.password = newUser.generateHash(password);
@@ -103,7 +132,12 @@ module.exports = function(passport) {
                         throw err;
                     return done(null, newUser);
                 });
+            
+            // else{
+            //     return done(null, false, req.flash('signupMessage', 'The password you have entered is not valid!'));
+            // }
             }
+
 
         });    
 
