@@ -32,9 +32,21 @@ var profileSchema = mongoose.Schema({
 	},
 	
 	friends: {
-		accepted: [{type: ObjectId, ref: 'User'}],
-		pending: [{type: ObjectId, ref: 'User'}]
+		// Accepted will have the status Boolean to true through a 'verb' nodeJS method
+		accepted: [{type: ObjectId, ref: 'User', status: Boolean}],
+		// Pending will have the status Boolean set to false 
+		pending: [{type: ObjectId, ref: 'User', status: Boolean}],
+		// rejected will have the status Boolean set to false as well and then we'll have to handle it to set it to this 
+		rejected: [{type:ObjectId, ref: 'User', status:Boolean}]
 	},
+//	If the above doesn't work we can split them into individual parts 
+//	friendsAccepted:
+//		[{type: ObjectId, ref: 'User', status: Boolean}],
+//	friendsPending:
+//		[{type: ObjectId, ref: 'User', status: Boolean}],
+//	friendsRejected:
+//		[{type:ObjectId, ref: 'User', status:Boolean}],
+//	
 	login : [{type: ObjectId, ref: 'userSchema'}]
 	
 });

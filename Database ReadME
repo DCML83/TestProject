@@ -1,0 +1,35 @@
+These are 'verb' methods I used to test the database.
+
+
+app.get('/userlist', function(req, res) {
+	    var db = req.db;
+	    var collection = db.get('users');
+	    collection.find({},{},function(e,docs){
+	        res.render('userlist', {
+	            "userlist" : docs
+	        });
+	    });
+	});
+	
+	app.post('/addFriend', isLoggedIn, function(req, res) {
+	    // Get our form values.
+		var db = req.db;
+	    var userFriend = req.body.email;
+	    var collection = db.get('users');
+	    var thisUser = req.user;
+	    thisUser.update(
+	    {
+	    $addToSet:{
+	        friends : userFriend
+	    
+	    }}, function (err, doc) {
+	        if (err) {
+	            // If it failed, return error
+	            res.send("There was a problem adding the information to the database.");
+	        }
+	        else {
+	            // And forward to success page
+	            res.redirect("/profile");
+	        }
+	    });
+	});
