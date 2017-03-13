@@ -6,8 +6,6 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
     <style>
         body        { padding-top:80px; word-wrap:break-word; }
-	.pic { height:100px; width:100px;}
-	
     </style>
 </head>
 <body>
@@ -17,6 +15,23 @@
         <h1><span class="fa fa-anchor"></span> Profile Page</h1>
         <a href="/logout" class="btn btn-default btn-sm">Logout</a>
     </div>
+        
+     
+    <form action="/addFriend" method="post">
+        <div class="form-group">
+            <label>fName</label>
+            <input type="text" class="form-control" name="Fname">
+        </div>
+        <div class="form-group">
+            <label>lName</label>
+            <input type="text" class="form-control" name="Lname">
+        </div>
+
+        <button type="submit" class="btn btn-warning btn-lg">Add Friend</button>
+    </form>
+  
+  
+    <div class="row">
 
         <!-- LOCAL INFORMATION -->
         <div class="col-sm-6">
@@ -30,10 +45,29 @@
                     </p>
 
             </div>
+          
+           	<p>
+            	<strong> friends </strong>: <%= user.local.friends %>
+           	</p>
         </div>
+        
+        
+                 <h2>List of users</h2>
+ 
+<form method="post" action="/addfriend" class="inline">
+  <% userlist.forEach(function(user) { %>
+    <li><button type="submit" name="email" value="<%= user._id %>" class="link-button"><%= user.local.email %></a></li>
+   <% }) %>
+  </button>
+</form>
+         
+                  <h2>Friends</h2>
+ <ul>
+  <% userlist.forEach(function(user) { %>
+    <li><a href="users/#<%= user.friends %>"> <%= user.friends %></a></li>
+   <% }) %>
+</ul>    	
 
-	<!-- post -->
-	
 
     </div>
 

@@ -63,6 +63,41 @@ module.exports = function(app, passport) {
 		res.redirect('/');
 	});
 
+	
+	app.get('/userlist', function(req, res) {
+	    var db = req.db;
+	    var collection = db.get('users');
+	    collection.find({},{},function(e,docs){
+	        res.render('userlist', {
+	            "userlist" : docs
+	        });
+	    });
+	});
+	
+	app.post('/addFriend', isLoggedIn, function(req, res) {
+	    // Get our form values. These rely on the "name" attributes
+		var db = req.db;
+	    var userFriend = req.body.email;
+	    var collection = db.get('users');
+	    var thisUser = req.user;
+	    var id = req.user._id;
+	    var thisFriend = req.user.friends;
+	    thisUser.update(
+	    {
+	    $addToSet:{
+	        friends : userFriend
+	    
+	    }}, function (err, doc) {
+	        if (err) {
+	            // If it failed, return error
+	            res.send("There was a problem adding the information to the database.");
+	        }
+	        else {
+	            // And forward to success page
+	            res.redirect("/profile");
+	        }
+	    });
+	    });
 	app.get('/profile-temp', isLoggedIn, function(req,res){
 
 		if(req.user.local.active){
