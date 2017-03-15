@@ -1,0 +1,60 @@
+html body{
+    background-color: white
+}
+.search{
+    padding: 5px;
+    background: white;
+    border: 1px solid white;
+    width: 400px;
+    border-radius: 15px;
+}
+.button{
+    position: relative;
+    background-color: #207cca;
+    color: white;
+    width: 75px;
+    height: 25px;
+    border-radius: 5px;
+}
+#main-box{
+    background-color: darkred;
+    position: absolute;
+    padding:20px;
+    border-radius: 25px;
+    width: 80%;
+    height: 90%;
+    left: 10%;
+    top: 5%;
+    color: white;
+}
+#SearchBar {
+    position: absolute;
+    left: 2%;
+    top: 2%;
+}
+#SuggestedFriends{
+    position: absolute;
+    top: 7%;
+    left: 5%;
+    font-size: 1em;
+}
+#YourFriends{
+    position:absolute;
+    top:40%;
+    left:5%;
+    
+}
+#copyright{
+    position: absolute;
+    top: 92%;
+    left: 2%;
+}
+h1{
+    position:fixed;
+    left: 40%
+}
+h2{
+    position: fixed;
+    left: 45%;
+    font-size: 2em;
+}
