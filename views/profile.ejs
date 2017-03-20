@@ -54,12 +54,12 @@
         
                  <h2>List of users</h2>
  
-<form method="post" action="/addfriend" class="inline">
   <% userlist.forEach(function(user) { %>
-    <li><button type="submit" name="email" value="<%= user._id %>" class="link-button"><%= user.local.email %></a></li>
-   <% }) %>
+     <li><a href="<%linkAddFriends%><%= user._id%>"> <%= user.local.email %></a></li>
+             <% }) %>
+
   </button>
-</form>
+
          
                   <h2>Friends</h2>
  <ul>

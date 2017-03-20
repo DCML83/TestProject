@@ -1,6 +1,6 @@
 //app/models/user.js
 //load modules
-
+var friends = require("mongoose-friends");
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var ObjectId = mongoose.Schema.Types.ObjectId;
@@ -14,6 +14,8 @@ var userSchema = mongoose.Schema({
 			unique: true,
 		},
 		password: String,
+		
+		active: {type:Boolean,default:true}
 	},
 	// shift this to profile after testing
 	friends:[{type : ObjectId, ref: 'User' }]
@@ -32,27 +34,16 @@ var profileSchema = mongoose.Schema({
 	},
 	
 	friends: {
-		// Accepted will have the status Boolean to true through a 'verb' nodeJS method
 		accepted: [{type: ObjectId, ref: 'User', status: Boolean}],
-		// Pending will have the status Boolean set to false 
-		pending: [{type: ObjectId, ref: 'User', status: Boolean}],
-		// rejected will have the status Boolean set to false as well and then we'll have to handle it to set it to this 
-		rejected: [{type:ObjectId, ref: 'User', status:Boolean}]
+		pending: [{type: ObjectId, ref: 'User', status: Boolean}]
 	},
-//	If the above doesn't work we can split them into individual parts 
-//	friendsAccepted:
-//		[{type: ObjectId, ref: 'User', status: Boolean}],
-//	friendsPending:
-//		[{type: ObjectId, ref: 'User', status: Boolean}],
-//	friendsRejected:
-//		[{type:ObjectId, ref: 'User', status:Boolean}],
-//	
 	login : [{type: ObjectId, ref: 'userSchema'}]
 	
 });
 
 // methods
 // generating a hash
+userSchema.plugin(friends({pathName: "Friends"}));
 
 userSchema.methods.generateHash = function(password) {
 	return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
