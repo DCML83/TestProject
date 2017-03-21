@@ -20,7 +20,8 @@ var Comment = new Schema({
 
 //define schema for the posts, which store the comment as well
 var postSchema = mongoose.Schema({
-	author: [{type: ObjectId, ref: 'User'}],
+	postby: [{type: ObjectId, ref: 'User'}],
+    postto:[{type:ObjectId,ref:'User'}],
 	body: String, 
 	date: Date,
 	comments: [{type: ObjectId, ref: 'Comment'}],

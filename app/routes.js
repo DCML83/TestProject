@@ -1,8 +1,13 @@
+var User         = require('../app/model/user').User;
+var db = require('../config/database.js');
+var friends = require("mongoose-friends");
+var Status = require("mongoose-friends").Status;
+var Post  = require('../app/model/posts').Post
+var nodemailer = require("nodemailer");
+	
 module.exports = function(app, passport) {
 	
-	var User = require('../app/model/user').User;	
-	var nodemailer = require("nodemailer");
-	var smtpTransport = require("nodemailer-smtp-transport")
+	var smtpTransport = require("nodemailer-smtp-transport");
 	var mailOptions,host,link;
 	/* SMTP server */
 
@@ -51,9 +56,14 @@ module.exports = function(app, passport) {
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this ( the isLoggedIn function)
 	app.get('/profile', isLoggedIn, function(req,res){
-		res.render('profile.ejs',{
-			user: req.user // get the user out of session and pass to template
-		});
+
+		Post.find({postto: req.user._id}, function(err, docs){
+		 res.render('profile.ejs',{
+				'postlist' : docs,
+				user : req.user, // get the user out of session and pass to template
+				//link:"https//"+req.get('host')+"/addFriend?id="
+			});
+		});	
 	});
 
 
@@ -63,6 +73,26 @@ module.exports = function(app, passport) {
 		res.redirect('/');
 	});
 
+	app.post('/post', isLoggedIn, function(req,res, done){
+		console.log(req.body.message);
+		console.log(req.body.email);
+		User.findOne({'local.email':req.body.email}, function(err, u){
+		console.log('its here');
+		var date = new Date();
+		var current_date = date.getDate();
+		var newPost = new Post();
+		newPost.postby = req.user._id;
+		newPost.postto = u._id
+		newPost.body = req.body.message;
+		newPost.date = current_date;
+		newPost.save(function(error) {
+   		if (!error) {
+			res.redirect(req.get('referer'));
+    	   return done(null, newPost);
+    }
+		});});
+	
+});
 	
 	app.get('/userlist', function(req, res) {
 	    var db = req.db;

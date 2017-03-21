@@ -1,76 +1,112 @@
 <!doctype html>
 <html>
 <head>
-    <title>Node Authentication</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-    <style>
-        body        { padding-top:80px; word-wrap:break-word; }
-    </style>
+<meta charset="utf-8">
+<title>MUNSSN-Profile</title>
+<link href="CSS/navCSS.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="JS/profileJS.js"></script>
 </head>
-<body>
-<div class="container">
-
-    <div class="page-header text-center">
-        <h1><span class="fa fa-anchor"></span> Profile Page</h1>
-        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
-    </div>
-        
-     
-    <form action="/addFriend" method="post">
-        <div class="form-group">
-            <label>fName</label>
-            <input type="text" class="form-control" name="Fname">
-        </div>
-        <div class="form-group">
-            <label>lName</label>
-            <input type="text" class="form-control" name="Lname">
-        </div>
-
-        <button type="submit" class="btn btn-warning btn-lg">Add Friend</button>
-    </form>
-  
-  
-    <div class="row">
-
-        <!-- LOCAL INFORMATION -->
-        <div class="col-sm-6">
-            <div class="well">
-                <h3><span class="fa fa-user"></span> Local</h3>
-
+<body onload="ol()">
+<div id="banner">
+	<h2>Test Information</h2>
+	<p>some nonsense I guess</p>
+</div>
+<nav id="nav_bar">
+	<ul class="nav_links">
+		<li><a href="url">MUNSSN</a>
+		<li><a href="url">Friends</a>
+		<li><a href="url">Groups</a>
+		<li><a href="url">Nav Bar</a>
+		<li><a href="/logout">Logout</a>
+		<li class="dropdown"><a href="url">Nav Bar</a>
+  <div class="dropdown-content">
+    <a class="dropC" href="#">Profile</a>
+    <a class="dropC" href="#">Settings</a>
+    <a class="dropC" href="#">Sign Out</a>
+  </div>
+	</ul>
+</nav>
+<div id="body_div">
+	<div id = "profLeft">
+		 <h3><span class="fa fa-user"></span> Local</h3>
                     <p>
                         <strong>id</strong>: <%= user._id %><br>
                         <strong>email</strong>: <%= user.local.email %><br>
                         <strong>password</strong>: <%= user.local.password %>
                     </p>
+	</div>
+	
+	<div id = "profRight">
+	
+		<div id = "tab">
+			<button class="tablink" onclick="openTab(event, 'Timeline')" id="defaultLoad">Timeline</button>
+			<button class="tablink" onclick="openTab(event, 'Schedule')">Schedule</button>
+			<button class="tablink" onclick="openTab(event, 'Resume')">Resume</button>
+		</div>
+		<div id = "tlBox">
+			<div id="Timeline" class="tabcontent">
+				
+				<div id="postBox">
+					<form action="/Post" method="post">
+					<textarea rows="4" placeholder="Enter comment here."></textarea>
+					<select name="visibility">
+						<option value="everyone">Everyone</option>
+						<option value="friends">Friends</option>
+						<option value="me">Only me</option>
+						<option value="select">Select...</option>
+					</select>
+					<button class="post" type="submit" >Post</button>
+					</form>
+				</div>
+				
+     <h2>List of Post</h2>
+<% postlist.forEach(function(post) { %>
+<form method="post" action="javascript:void 1" class="inline" id ="postform_<%= post._id %>">
 
-            </div>
-          
-           	<p>
-            	<strong> friends </strong>: <%= user.local.friends %>
-           	</p>
-        </div>
-        
-        
-                 <h2>List of users</h2>
- 
-  <% userlist.forEach(function(user) { %>
-     <li><a href="<%linkAddFriends%><%= user._id%>"> <%= user.local.email %></a></li>
-             <% }) %>
-
-  </button>
-
-         
-                  <h2>Friends</h2>
- <ul>
-  <% userlist.forEach(function(user) { %>
-    <li><a href="users/#<%= user.friends %>"> <%= user.friends %></a></li>
-   <% }) %>
-</ul>    	
-
+    <p><%= post.body %></p>
+    <br>
+    <div id ="comment_area">
 
     </div>
+    <input type="text" name="comment" value="">
+    <button type="submit" name="post_id" value="<%= post._id %>" class="link-button" onclick="submitText(this)">comment
+    </button>
 
+</form>
+ <% }) %>
+			</div>
+			<div id="Schedule" class="tabcontent">
+				<p>Memes</p>
+			</div>
+		</div>
+	
+		<div id="friendsBox">
+			<p>Lorem ipsum dolor sit amet, vel te tibique percipitur efficiantur, dictas recteque mel ad. Nam modo honestatis disputationi te, elaboraret delicatissimi ea pri, ne pri impedit mediocrem petentium. Mel in fabulas electram, fabellas prodesset definitiones ei his. In mea dicta dicam dolores, ea legere mandamus cum. Debitis voluptaria dissentiunt an quo, putant definitiones nec ne, ut eam solet epicurei.
+
+Et pro wisi dicunt ponderum, vis in simul recusabo, eu per idque aliquando. Cum quaeque omnesque ut, cu nihil malorum sea, eu purto tincidunt has. Qui propriae definitiones in. Eripuit vocibus nec te, persius saperet adipisci in nec, cu pri maiorum sententiae. Invidunt inimicus in nam. Cum everti equidem an.
+
+Albucius prodesset rationibus ea sea, malis doctus definitionem mei ei. Solum clita nam no, cum impetus laoreet ad. Cum constituto interpretaris ne. Ponderum accusamus vel no, an pri utamur intellegat. Ea cum liber omittam, dicit albucius pri ad, habeo tritani labitur ei sit.</p>
+		</div>
+	
+	</div>
+	
 </div>
+
+<script type ="text/javascript">
+  function submitText(event){
+ 	 var form = event.form;
+ 	var div  = form.querySelector('#comment_area');
+ 		add(form, div);
+  }
+
+  function add(form ,div, s){
+ 	var para = document.createElement("p");
+ 	var node = document.createTextNode(form.comment.value);
+ 	para.appendChild(node);
+    div.appendChild(para);
+    form.comment.value =""
+ 	}
+ </script>
 </body>
 </html>

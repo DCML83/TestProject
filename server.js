@@ -8,7 +8,6 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
 var path = require('path');
-
 var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -26,7 +25,7 @@ require('./config/passport')(passport); // pass passport for configuration
 
 //set up the express application
 
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(__dirname + '/public'));
 
 app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
