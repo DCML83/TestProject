@@ -2,7 +2,7 @@ var User         = require('../app/model/user').User;
 var db = require('../config/database.js');
 var friends = require("mongoose-friends");
 var Status = require("mongoose-friends").Status;
-var Post  = require('../app/model/posts').Post
+var Post  = require('../app/model/posts').Post;
 var nodemailer = require("nodemailer");
 var moment = require('moment');
 
@@ -79,17 +79,19 @@ module.exports = function(app, passport) {
 		console.log(req.body.message);
 		console.log(req.body.email);
 		User.findOne({'local.email':req.body.email}, function(err, u){
-		console.log('its here');
 		var newPost = new Post();
 		newPost.postby = req.user._id;
 		newPost.postto = u._id
 		newPost.body = req.body.message;
-		newPost.date = moment().format('MMMM Do YYYY, h:mm:ss a');
+		newPost.date = moment().format('llll');
 		newPost.save(function(error) {
    		if (!error) {
 			res.redirect(req.get('referer'));
     	   return done(null, newPost);
-    }
+   		 }
+			else{
+				console.log(error)
+			}
 		});});
 	
 });
@@ -131,8 +133,7 @@ module.exports = function(app, passport) {
 	app.get('/profile-temp', isLoggedIn, function(req,res){
 
 		if(req.user.local.active){
-			res.render('profile.ejs', {
-			});}
+			  res.redirect("/profile");}
 			else {
 				res.render('profile-temp.ejs', {});
 					host = req.get('host');
