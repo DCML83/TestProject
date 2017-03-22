@@ -1,0 +1,108 @@
+@charset "utf-8";
+/* CSS Document */
+/* Not everything in this CSS document is relevent for the signup page */
+.signForm input {
+	color:black;
+	line-height: normal;
+}
+
+.iBox {
+	width:100%;
+}
+
+.fName {
+	width: 35%;
+}
+
+.lName {
+	width: 60%;
+	float: right;
+}
+
+body {
+	line-height: 0px;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.navbar-fixed {
+	top: 0;
+	z-index: 100;
+	position: fixed;
+	width: 100%;
+}
+
+#body_div {
+	vertical-align: top;
+	top: 0;
+	height: 100%;
+	margin: 0 5% 0 5%;
+	line-height: normal;
+	
+}
+
+#profLeft {
+	width:44%;
+	float:left;
+	padding: 3%;
+}
+
+#profRight {
+	background-color: maroon;
+	width: 44%;
+	padding: 3% ;
+	float: right;
+	border-radius: 0px 0px 15px 15px;
+	color: white;
+}
+
+#friendsBox {
+	background-color: maroon;
+	width: 54%;
+	padding: 3% ;
+	float: right;
+	border-radius: 15px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#banner {
+	width: 100%;
+	height: 273px;
+	background-color: grey;
+	overflow: hidden;
+}
+
+#nav_bar{
+	border: 0;
+	background-color:maroon;
+	border-radius: 0px;
+	margin: 0 ;
+	line-height: normal;
+	z-index: 100;
+	width: 100%;
+	
+}
+
+.nav_links {
+	margin: 0 5% 0 0;
+}
+
+.nav_links li {
+	display: inline-block;
+	padding: 4px;
+	margin: 0;
+	background-color: maroon;
+}
+
+.nav_links li a {
+	padding: 0 15.5px;
+	color:white;
+	text-decoration: none;
+}
+
+p {
+	margin: 0;
+}

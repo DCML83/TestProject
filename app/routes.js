@@ -4,7 +4,8 @@ var friends = require("mongoose-friends");
 var Status = require("mongoose-friends").Status;
 var Post  = require('../app/model/posts').Post
 var nodemailer = require("nodemailer");
-	
+var moment = require('moment');
+
 module.exports = function(app, passport) {
 	
 	var smtpTransport = require("nodemailer-smtp-transport");
@@ -60,7 +61,8 @@ module.exports = function(app, passport) {
 		Post.find({postto: req.user._id}, function(err, docs){
 		 res.render('profile.ejs',{
 				'postlist' : docs,
-				user : req.user, // get the user out of session and pass to template
+				user : req.user,
+				// moment : moment(), // get the user out of session and pass to template
 				//link:"https//"+req.get('host')+"/addFriend?id="
 			});
 		});	
@@ -78,13 +80,11 @@ module.exports = function(app, passport) {
 		console.log(req.body.email);
 		User.findOne({'local.email':req.body.email}, function(err, u){
 		console.log('its here');
-		var date = new Date();
-		var current_date = date.getDate();
 		var newPost = new Post();
 		newPost.postby = req.user._id;
 		newPost.postto = u._id
 		newPost.body = req.body.message;
-		newPost.date = current_date;
+		newPost.date = moment().format('MMMM Do YYYY, h:mm:ss a');
 		newPost.save(function(error) {
    		if (!error) {
 			res.redirect(req.get('referer'));

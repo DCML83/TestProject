@@ -1,26 +1,52 @@
-<!-- views/index.ejs -->
 <!doctype html>
 <html>
 <head>
-    <title>Node Authentication</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
-    <style>
-        body        { padding-top:80px; }
-    </style>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<link href="CSS/signCSS.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="JS/navbarJS.js"></script>
 </head>
 <body>
-<div class="container">
-
-    <div class="jumbotron text-center">
-        <h1><span class="fa fa-lock"></span> Node Authentication</h1>
-
-        <p>Login or Register with:</p>
-
-        <a href="/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
-        <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
-    </div>
-
+<div id="banner">
+	<h2>MUNSSN</h2>
+	<p>There will be a banner here</p>
 </div>
+<nav id="nav_bar">
+	<ul class="nav_links">
+		
+		<li><form action="/login" method="post">
+			Email: <input type="text" name="email" value="">
+			Password: <input type="password" name="password" value="">
+			<input type="submit" value="Log In">
+            </form></li>
+	</ul>
+	 
+</nav>
+
+
+<div id="body_div">
+	<div id = "profLeft">
+		<a href="/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
+        <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
+	</div>
+	<div id = "profRight">
+		<h1>Sign Up</h1>
+				<form class="signForm" action="/action_page.php" onSubmit="return signFunc()">
+					<input class="fName" type="text" name="fName" placeholder="First Name" required>
+					<input class="lName" type="text" name="lName" placeholder="Last Name" required></br></br>
+					<input class="iBox" type="text" name="email" placeholder="Email" required></br></br>
+					<input class="iBox" type="text" name="emailC" placeholder="Email Confirm" required></br></br>
+					<input class="iBox" type="password" name="Password" placeholder="Password" required></br></br>
+					<input class="iBox" type="password" name="PasswordC" placeholder="Password Confirm" required></br></br>
+					
+					<button type="submit">Signup</button>
+				</form>
+	</div>
+	
+</div>
+
+
 </body>
 </html>
+
