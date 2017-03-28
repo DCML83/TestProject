@@ -12,9 +12,9 @@ $(document).ready(function() {
 });
 
 function signFunc() {
-	var email = document.getElementsByName('email')[0].value;
+	var email = document.getElementsByName('email')[1].value;
 	var emailC = document.getElementsByName('emailC')[0].value;
-	var pw = document.getElementsByName('password')[0].value;
+	var pw = document.getElementsByName('password')[1].value;
 	var pwc = document.getElementsByName('passwordC')[0].value;
 	if (!email.endsWith("@mun.ca")){
 		alert("Email is not a @mun.ca email address");
