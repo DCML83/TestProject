@@ -41,12 +41,12 @@ module.exports = function(passport) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
-        
+
         User.findOne({ 'local.email' :  email }, function(err, user) {
             // if there are any errors, return the error before anything else
             if (err)
                 return done(err);
-           
+
             // if no user is found, return the message
             if (!user)
                 return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
@@ -54,7 +54,7 @@ module.exports = function(passport) {
             // if the user is found but the password is wrong
             if (!user.validPassword(password))
                 return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'+user.local.active)); // create the loginMessage and save it to session as flashdata
-            
+
             // if the user's account is not activate
             if(!user.local.active)
                  return done(null,false,req.flash('loginMessage', 'Account is not actve'));
@@ -64,41 +64,13 @@ module.exports = function(passport) {
         });
 
     }));
-    function checkPassword(str)
-  {
-    var re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
-    return re.test(str);
-  };
 
-  function checkUserPassword(username,password)
-  {
-    if(username == "") {
-      //alert("Error: Username cannot be blank!");
-      return false;
-    }
-    re = /^\w+$/;
-    if(!re.test(username)) {
-      //alert("Error: Username must contain only letters, numbers and underscores!");
-      //form.username.focus();
-      return false;
-    }
-    if(password != "") {
-      if(!checkPassword(password)) {
-        //alert("The password you have entered is not valid!");
-        return false;
-      }
-    } else {
-     // alert("Error: Please check that you've entered and confirmed your password!");
-     // form.pwd1.focus();
-      return false;
-    }
-    return true;
-  };
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'email',
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
+
     },
     function(req, email, password, done) {
 
@@ -112,12 +84,10 @@ module.exports = function(passport) {
             // if there are any errors, return the error
             if (err)
                 return done(err);
-
             // check to see if theres already a user with that email
             if (user) {
                 return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
             } else {
-
                 // if there is no user with that email
                 // create the user
                 var newUser            = new User();
@@ -125,21 +95,27 @@ module.exports = function(passport) {
                 // set the user's local credentials
                 newUser.local.email    = email;
                 newUser.local.password = newUser.generateHash(password);
-
+                newUser.name.first = req.body.fName;
+                newUser.name.last = req.body.lName
+                newUser.Major = req.body.major;
+                newUser.Year = req.body.schoolyear;
+                newUser.gender = req.body.gender;
+                console.log(req.body.year, req.body.month, req.body.day);
+                var bday = new Date(req.body.year, req.body.month, req.body.day);
+                console.log(bday);
+                newUser.birthday = bday;
                 // save the user
                 newUser.save(function(err) {
                     if (err)
                         throw err;
                     return done(null, newUser);
                 });
-            
-            // else{
-            //     return done(null, false, req.flash('signupMessage', 'The password you have entered is not valid!'));
-            // }
+
+
             }
 
 
-        });    
+        });
 
         });
 

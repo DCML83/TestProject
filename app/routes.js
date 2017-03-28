@@ -4,15 +4,20 @@ var friends = require("mongoose-friends");
 var Status = require("mongoose-friends").Status;
 var Post  = require('../app/model/posts').Post;
 var lostFound = require('../app/model/lostFound').lostFound;
-var nodemailer = require("nodemailer");
 var moment = require('moment');
-
+var multer = require('multer');
+var upload = multer({ dest:__dirname + '/public/upload/temp' });
+var fs = require('fs');
+var bcrypt = require('bcrypt-nodejs');
+var nodemailer = require("nodemailer");
+var md5 = require("blueimp-md5");
+var path = require('path');
+var rootpath = path.dirname(require.main.filename);
 module.exports = function(app, passport) {
 
 	var smtpTransport = require("nodemailer-smtp-transport");
 	var mailOptions,host,link;
 	/* SMTP server */
-
 
 	var smtpTransport = nodemailer.createTransport(smtpTransport({
 		host: "smtp.gmail.com",
@@ -26,16 +31,16 @@ module.exports = function(app, passport) {
 
 	//home page
 	app.get('/', function(req, res) {
-		res.render('index.ejs'); // load the index.ejs file
+		res.render('index.ejs',{ message: req.flash('signupMessage') }); // load the index.ejs file
 	});
 
 	//login
 
 	// show the login form
-	app.get('/login', function(req, res) {
-		// render the page and pass in any flash data if it exists
-		res.render('login.ejs', { message: req.flash('loginMessage') });
-	});
+	// app.get('/login', function(req, res) {
+	// 	// render the page and pass in any flash data if it exists
+	// 	res.render('login.ejs', { message: req.flash('loginMessage') });
+	// });
 
 	// process the login form
 	// app.post('/login, do all our passport stuff here);
@@ -61,19 +66,36 @@ module.exports = function(app, passport) {
 			});
 		});
 	});
+	app.get('/group', isLoggedIn, function(req,res, done){
+			res.render('Groups.ejs',{
+				user:req.user,
+			});
+	});
 
-	app.post('/lostfoundpost', isLoggedIn, function(req, res,done){
 
+	var type = upload.single('picture');
+	app.post('/lostfoundpost', type, isLoggedIn, function(req,res,done){
+		var tmp_path = req.file.path;
+ 		var mimetype = req.file.mimetype.split("/");
+		var extension = mimetype[1];
+		var name  = md5(req.file.orignalname);
+		destination ='upload/lostFound/' + name+"."+extension;
+  	var target_path = rootpath + '/public/'+destination;
+		var src = fs.createReadStream(tmp_path);
+		var dest = fs.createWriteStream(target_path);
+		src.pipe(dest);
+		src.on('end', function() {
 		var newlostFound = new lostFound();
 		newlostFound.postby = req.user._id;
 		newlostFound.body = req.body.message;
 		newlostFound.date = moment().format();
-		newlostFound.location = req.body.location;
+		newlostFound.location = req.location;
+		newlostFound.picture = destination;
 		newlostFound.contact.email = req.body.email;
 		newlostFound.contact.phone = req.body.phone;
 		newlostFound.save(function(error) {
 			if (!error) {
-			res.redirect(req.get('referer'));
+				 res.redirect(req.get('referer'));
 				 return done(null, lostFound);
 			 }
 			else{
@@ -81,6 +103,9 @@ module.exports = function(app, passport) {
 			}
 		});
 	});
+	src.on('error', function(err) { console.log(err); });
+
+});
 
 	// process the signup form
 	// app.post('/signup', do all our passport stuff here);
@@ -213,9 +238,10 @@ module.exports = function(app, passport) {
         });
 
 });
+
 	// process the signup from
 	app.post('/signup', passport.authenticate('local-signup', {
-		successRedirect : '/profile-temp', // redirect to the secure profile section
+		successRedirect : '/profile', // redirect to the secure profile section
 		failureRedirect : '/signup', // redirect back to the signup page if there is an error
 		failureFlash: true // allow flash messages
 	}));
@@ -223,7 +249,7 @@ module.exports = function(app, passport) {
 	// process the login form
 	app.post('/login', passport.authenticate('local-login', {
 		successRedirect : '/profile', // redirect to the secure profile section
-		failureRedirect : '/login', // redirect back to the signup page if there is an error
+		failureRedirect : '/', // redirect back to the signup page if there is an error
 		failureFlash : true // allow flash messages
 	}));
 };
@@ -236,3 +262,7 @@ function isLoggedIn(req, res, next) {
 	// if they aren't redirect them to the home page
 	res.redirect('/');
 }
+
+function generateHash(str) {
+	return bcrypt.hashSync(str, bcrypt.genSaltSync(8), null);
+};

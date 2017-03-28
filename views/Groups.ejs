@@ -1,25 +1,96 @@
-<link rel="stylesheet" type="text/css" href="Groups.css">
+
 <html>
+<head>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="CSS/navCSS.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="CSS/Group.css">
+</head>
+
+<nav id="nav_bar">
+	<ul class="nav_links">
+		<li><a href="/">MUNSSN</a>
+		<li><a href="url">Friends</a>
+		<li><a href="/Group">Groups</a>
+      <li><a href="/lostandfound">Lost and Found</a>
+		<li><a href="/logout">Logout</a>
+		<li class="dropdown"><a href="url"><%= user.local.email%></a>
+  <div class="dropdown-content">
+    <a class="dropC" href="/profile">Profile</a>
+    <a class="dropC" href="#">Settings</a>
+    <a class="dropC" href="/logout">Log Out</a>
+  </div>
+	</ul>
+</nav>
 <div id="main">
 <div id="SearchBar">
-    <input type="text" placeholder="SEARCH..."class="search" />
-    <button type="button"class="button">Search</button>
+    <input type="text" placeholder="Search..."class="search" />
+    <button type="button"class="fa fa-search"style="background-color: whitesmoke; height:25px; width:35px; border-radius: 2px;"></button>
     <div id="createGroup">
-        <button type="button" class="otherbutton">Create Group</button><br />
+        <button type="button" class="otherbutton" id="myBtn">Create Group</button><br />
+    </div>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form action="/creategroup" method="post">
+        <label>name</label>  <input type ="text" name ="name" value=" "><br>
+        <textarea name="description" rows="4" placeholder="Enter description here."></textarea><br>
+        <input type="hidden" name="email" value="<%= user.local.email %>">
+        <select name="type">
+          <option value="public">Everyone</option>
+          <option value="private">Friends</option>
+        </select>
+        <button class="create" type="submit" >Create</button>
+        </form>
+      </div>
     </div>
 </div>
-<div>
-    <div id="Groups">
-        <h1>My Groups</h1>
+    <div>
+        <div id="Groups">
+            <h1>My Groups</h1>
+        </div>
+        <div id="divider">
+            <div id="suggested">
+                <h2>Suggested Groups</h2>
+            </div>
+        </div>
     </div>
-    <div id="divider">
-    <div id="suggested">
-       <h2>Suggested Groups</h2>
-    </div>
-    </div>
-</div>
     <div id="copyright">
-        <h3>© ALL RIGHTS RESERVED</h3>
+        <h3>? ALL RIGHTS RESERVED</h3>
     </div>
 </div>
+
+
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+</body>
 </html>

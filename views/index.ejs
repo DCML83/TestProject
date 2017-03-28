@@ -4,49 +4,65 @@
 <meta charset="utf-8">
 <title>Untitled Document</title>
 <link href="CSS/signCSS.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script src="JS/navbarJS.js"></script>
+<script src="JS/dobPicker.min.js"></script>
+<script src="JS/dateselector.js"></script>
+
 </head>
 <body>
-<div id="banner">
+<!-- <div id="banner">
 	<h2>MUNSSN</h2>
 	<p>There will be a banner here</p>
-</div>
-<nav id="nav_bar">
-	<ul class="nav_links">
-		
-		<li><form action="/login" method="post">
-			Email: <input type="text" name="email" value="">
-			Password: <input type="password" name="password" value="">
-			<input type="submit" value="Log In">
-            </form></li>
-	</ul>
-	 
-</nav>
+</div> -->
 
+<div class="w3-bar w3-border w3-text-white "id="nav_bar">
+	<span class="w3-bar-item"></span>
+<img src="/images/MUN_Logo.png" class="w3-bar-item" height="80" width="200">
+  <span  class="w3-bar-item w3-right"><form action="/login" method="post">
+		<span  class="w3-bar-item">Email:<br><input type="text" name="email" value=""class="w3-border " ></span>
+		<span  class="w3-bar-item" >Password:<br><input type="password" name="password" value="" class=" w3-border " ></span>
+	<span  class="w3-bar-item"> <button type="submit" class="w3-button w3-red w3-padding-16">Log In</button></span>
+	</form></span>
+	  <span  class="w3-bar-item w3-right w3-medium"></span>
+</div>
+<br>
 
 <div id="body_div">
 	<div id = "profLeft">
 		<a href="/login" class="btn btn-default"><span class="fa fa-user"></span> Local Login</a>
         <a href="/signup" class="btn btn-default"><span class="fa fa-user"></span> Local Signup</a>
 	</div>
-	<div id = "profRight">
-		<h1>Sign Up</h1>
-				<form class="signForm" action="/action_page.php" onSubmit="return signFunc()">
-					<input class="fName" type="text" name="fName" placeholder="First Name" required>
-					<input class="lName" type="text" name="lName" placeholder="Last Name" required></br></br>
-					<input class="iBox" type="text" name="email" placeholder="Email" required></br></br>
-					<input class="iBox" type="text" name="emailC" placeholder="Email Confirm" required></br></br>
-					<input class="iBox" type="password" name="Password" placeholder="Password" required></br></br>
-					<input class="iBox" type="password" name="PasswordC" placeholder="Password Confirm" required></br></br>
-					
-					<button type="submit">Signup</button>
+	<div class="w3-half w3-container">
+		<h1 >Create a New Account</h1>
+		<h4> It’s free for Our MUN students</h4>
+				<form class="signForm" action="/signup" method="post" onsubmit='signFunc()' >
+					<input class="w3-margin-right w3-third w3-input w3-border w3-round w3-white" type="text" name="fName" placeholder="First Name"required>
+					<input class="w3-third w3-input w3-border w3-round w3-white" type="text" name="lName"  placeholder="Last Name" required><br><br><br>
+					<input class="iBox w3-input w3-border w3-round w3-white" type="text" name="email" placeholder="Email" required><br>
+					<input class="iBox w3-input w3-border w3-round w3-white" type="text" name="emailC"  placeholder="Email Confirm" required><br>
+					<input class="iBox w3-input w3-border w3-round w3-white" type="password" name="password" placeholder="Password" required><br>
+					<input class="iBox w3-input w3-border w3-round w3-white" type="password" name="passwordC" placeholder="Password Confirm" required><br>
+					<input class="w3-margin-right w3-third w3-input w3-border w3-round w3-white" type="text" name="schoolyear" placeholder="School Year"required>
+					<input class="w3-third w3-input w3-border w3-round w3-white" type="text" name="major"  placeholder="Major" required><br><br>
+					<h3>Birthday</h3>
+					<!-- These are the select elements we will target -->
+					<select id="dobday" name="day"></select>
+					<select id="dobmonth" name = "month"></select>
+					<select id="dobyear" name = "year"></select>
+					<br><br>
+					<select name = "gender" required><option value="">Gender</option>
+						<option value="Male">Male</option>
+						<option value="Female">Female</option>
+					</select>
+					<br><br>
+					<button type="submit" class= "w3-button w3-red">Signup</button>
 				</form>
 	</div>
-	
+
 </div>
 
 
 </body>
 </html>
-

@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MUNSSN-Profile</title>
+<link href="CSS/navCSS.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="JS/profileJS.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
+<script src="JS/momentjs.js"></script>
+</head>
+<body>
+	<div class="w3-bar w3-border  w3-text-white w3-collaspe " id="nav_bar">
+	  <a href="#" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey ">MUNSSN</a>
+	  <a href="/group" class="w3-bar-item w3-button  w3-hover-none w3-hover-text-grey">Group</a>
+	  <a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey">Friends</a>
+	  <a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-blue	">Lost and Found</a>
+		<div class="w3-dropdown-hover w3-right">
+	<button class="w3-button"><%= user.local.email%></button>
+	<div class="w3-dropdown-content w3-bar-block w3-cards">
+		<a href="/profile" class="w3-bar-item w3-button">profile</a>
+		<a href="#" class="w3-bar-item w3-button">Setting</a>
+		<a href="/logout" class="w3-bar-item w3-button">Logout</a>
+	</div>
+</div>
+	</div>
+<!-- <nav id="nav_bar">
+	<ul class="nav_links">
+		<li><a href="/">MUNSSN</a>
+		<li><a href="url">Friends</a>
+		<li><a href="url">Groups</a>
+		<li><a href="/logout">Logout</a>
+		<li class="dropdown"><a><%= user.local.email%></a>
+  <div class="dropdown-content">
+    <a class="dropC" href="/profile">Profile</a>
+    <a class="dropC" href="#">Settings</a>
+    <a class="dropC" href="/logout">Log Out</a>
+  </div>
+	</ul>
+</nav> -->
+<div id="body_div">
+	<div id = "profLeft">
+		 <h3><span class="fa fa-user"></span> Local</h3>
+                    <p>
+                        <strong>id</strong>: <%= user._id %><br>
+                        <strong>email</strong>: <%= user.local.email %><br>
+                    </p>
+	</div>
+
+	<div id = "profRight">
+
+		<div id = "tab">
+			<button class="tablink" onclick="openTab(event, 'Timeline')" id="defaultLoad">Timeline</button>
+		</div>
+		<div id = "tlBox">
+			<div id="Timeline" class="tabcontent">
+
+				<div id="postBox">
+					<form action="/lostfoundpost" method="post"  enctype   =  "multipart/form-data">
+					<textarea name="message" rows="4" placeholder="Enter Description here."></textarea>
+          <input type ="text" name ="location" placeholder="location">
+          <input type ="text" name ="phone" placeholder="phone"><br>
+          <input type="file" name = "picture"/>
+          <input type="hidden" name="email" value="<%= user.local.email %>"><br>
+				  <input type="submit" value="Post" name="submit">
+					</form>
+				</div>
+
+     <h2>List of Post</h2>
+<% postlist.forEach(function(post, index) { %>
+<div class="w3-panel w3-card-2 w3-white">
+    <p><%= post.body %></p>  <time id="then" datetime="<%= post.date%>"></time>
+  <br><img src="<%=post.picture%>" class="w3-round" height="100" width="100">
+<form method="post" action="javascript:void 1" class="inline" id ="postform_<%= post._id %>">
+	<br>
+		<input type="text" class="w3-input w3-border w3-round" name="comment" value=""><br>
+    <button type="submit" class="w3-btn w3-red" name="post_id" value="<%= post._id %>" class="link-button" onclick="submitText(this)">comment
+    </button>
+
+</form>
+</div>
+ <% }) %>
+			</div>
+
+		</div>
+
+
+
+	</div>
+
+</div>
+</body>
+</html>

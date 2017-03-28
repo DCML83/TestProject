@@ -4,54 +4,52 @@
 <meta charset="utf-8">
 <title>MUNSSN-Profile</title>
 <link href="CSS/navCSS.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script src="JS/profileJS.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
-   <script>
-      $(document).ready(function(){
-        var then = $('#then'),
-            date = moment(new Date(then.attr('data-date'))),
-            update = function(){
-                       then.html(date.fromNow());
-                     };
-        
-        update();
-        setInterval(update, 60000);
-      });
-    </script>
+<script src="JS/momentjs.js"></script>
 </head>
 <body>
-<div id="banner">
+<!-- <div id="banner">
 	<h2>Test Information</h2>
 	<p>some nonsense I guess</p>
+</div> -->
+<div class="w3-bar w3-border  w3-text-white w3-collaspe " id="nav_bar">
+	<a href="#" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">MUNSSN</a>
+	<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hover-text-grey w3-padding-16">Group</a>
+	<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Friends</a>
+	<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Lost and Found</a>
+	<div class="w3-dropdown-hover w3-right">
+<button class="w3-button w3-hover-none w3-hover-text-grey"><img src="<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" ><%= user.name.first%></p></button>
+<div class="w3-dropdown-content w3-bar-block w3-cards">
+	<a href="/profile" class="w3-bar-item w3-button">profile</a>
+	<a href="#" class="w3-bar-item w3-button">Setting</a>
+	<a href="/logout" class="w3-bar-item w3-button">Logout</a>
 </div>
-<nav id="nav_bar">
-	<ul class="nav_links">
-		<li><a href="url">MUNSSN</a>
-		<li><a href="url">Friends</a>
-		<li><a href="url">Groups</a>
-		<li><a href="url">Nav Bar</a>
-		<li><a href="/logout">Logout</a>
-		<li class="dropdown"><a href="url">Nav Bar</a>
-  <div class="dropdown-content">
-    <a class="dropC" href="#">Profile</a>
-    <a class="dropC" href="#">Settings</a>
-    <a class="dropC" href="#">Sign Out</a>
-  </div>
-	</ul>
-</nav>
+</div>
+</div>
 <div id="body_div">
-	<div id = "profLeft">
-		 <h3><span class="fa fa-user"></span> Local</h3>
-                    <p>
-                        <strong>id</strong>: <%= user._id %><br>
-                        <strong>email</strong>: <%= user.local.email %><br>
-                        <strong>password</strong>: <%= user.local.password %>
-                    </p>
+	<div id = "profLeft" class ="w3-third">
+		<div class="w3-card">
+			<div class="w3-card-2 w3-red">
+				<h1> Info</h1></div>
+
+    <img src="<%=user.image%>" class="w3-circle" width="100%">
+    <div class="w3-container">
+      <h4><b><%=user.name.first%> <%=user.name.last%></b></h4>
+      <p>year of <%=user.Year%></p>
+			<p>Major <%= user.Major%></P>
+			<p>Birthday <%= user.birthday%></p>
+		</div>
+
 	</div>
-	
-	<div id = "profRight">
-	
+</div>
+
+	<div id = "profRight" class ="w3-twothird">
+
 		<div id = "tab">
 			<button class="tablink" onclick="openTab(event, 'Timeline')" id="defaultLoad">Timeline</button>
 			<button class="tablink" onclick="openTab(event, 'Schedule')">Schedule</button>
@@ -59,28 +57,29 @@
 		</div>
 		<div id = "tlBox">
 			<div id="Timeline" class="tabcontent">
-				
+
 				<div id="postBox">
 					<form action="/post" method="post">
-					<textarea name="message" rows="4" placeholder="Enter message here."></textarea>
-                    <input type="hidden" name="email" value="<%= user.local.email %>">
+					<textarea name="message" rows="4" placeholder="Enter message here."></textarea><br>
+          <input type="hidden" name="email" value="<%= user.local.email %>">
 					<select name="visibility">
 						<option value="everyone">Everyone</option>
 						<option value="friends">Friends</option>
 						<option value="me">Only me</option>
 						<option value="select">Select...</option>
 					</select>
-					<button class="post" type="submit" >Post</button>
+					<button class="post w3-button w3-white" type="submit"><i class="fa fa-pencil"></i> Post</button>
 					</form>
 				</div>
-				
+
      <h2>List of Post</h2>
 <% postlist.forEach(function(post) { %>
+	<div class="w3-panel w3-card-2 w3-white">
 <form method="post" action="javascript:void 1" class="inline" id ="postform_<%= post._id %>">
 
     <p><%= post.body %></p>
-    <br>   <span id="then" data-date="<%= post.date%>"></span>
-   <span id="then" data-date="<%= post.date%>"></span>
+    <br>
+  <time id="then" datetime="<%= post.date%>"></time>
     <div id ="comment_area">
 
     </div>
@@ -89,23 +88,32 @@
     </button>
 
 </form>
+</div>
  <% }) %>
 			</div>
 			<div id="Schedule" class="tabcontent">
-				<p>Memes</p>
+				  <button onclick="document.getElementById('id01').style.display='block'" class="w3-button w3-white">Create Schedule</button>
+					<div id="id01" class="w3-modal">
+						<div class="w3-modal-content">
+		<div class="w3-container">
+			<span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+			<p>Enter Schedule Information</p>
+			form
+
+
+
+		</div>
+	</div>
+</div>
+
+
+
 			</div>
 		</div>
-	
-		<div id="friendsBox">
-			<p>Lorem ipsum dolor sit amet, vel te tibique percipitur efficiantur, dictas recteque mel ad. Nam modo honestatis disputationi te, elaboraret delicatissimi ea pri, ne pri impedit mediocrem petentium. Mel in fabulas electram, fabellas prodesset definitiones ei his. In mea dicta dicam dolores, ea legere mandamus cum. Debitis voluptaria dissentiunt an quo, putant definitiones nec ne, ut eam solet epicurei.
 
-Et pro wisi dicunt ponderum, vis in simul recusabo, eu per idque aliquando. Cum quaeque omnesque ut, cu nihil malorum sea, eu purto tincidunt has. Qui propriae definitiones in. Eripuit vocibus nec te, persius saperet adipisci in nec, cu pri maiorum sententiae. Invidunt inimicus in nam. Cum everti equidem an.
 
-Albucius prodesset rationibus ea sea, malis doctus definitionem mei ei. Solum clita nam no, cum impetus laoreet ad. Cum constituto interpretaris ne. Ponderum accusamus vel no, an pri utamur intellegat. Ea cum liber omittam, dicit albucius pri ad, habeo tritani labitur ei sit.</p>
-		</div>
-	
 	</div>
-	
+
 </div>
 
 <script type ="text/javascript">

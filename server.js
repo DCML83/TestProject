@@ -13,6 +13,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var moment = require('moment');
+var multer = require('multer');
 var configDB = require('./config/database.js');
 
 // configuration

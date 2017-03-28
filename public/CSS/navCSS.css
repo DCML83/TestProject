@@ -31,14 +31,15 @@ textarea {
 	height: 100%;
 	margin: 0 5% 0 5%;
 	line-height: normal;
-	
+
 }
 
 #profLeft {
-	width:34%;
+	width:30%;
 	float:left;
-	padding: 3%;
+	padding: 16px;
 }
+
 
 div #tab {
 	overflow: hidden;
@@ -68,9 +69,10 @@ div #tab button:hover {
 */
 
 #profRight {
-	width: 54%;
-	padding: 3% ;
+	width: 65%;
+	padding: 16px ;
 	float: right;
+	margin-left:5%
 }
 
 .tabcontent {
@@ -84,6 +86,7 @@ div #tab button:hover {
 	height: 94%;
 	padding: 3%;
 }
+
 
 #friendsBox {
 	background-color: maroon;
@@ -110,7 +113,7 @@ div #tab button:hover {
 	line-height: normal;
 	z-index: 100;
 	width: 100%;
-	
+
 }
 
 .nav_links {

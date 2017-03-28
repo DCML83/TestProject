@@ -1,6 +1,6 @@
 
 
-//app/models/user.js
+//app/models/posts.js
 //load modules
 
 var mongoose = require('mongoose');
@@ -11,9 +11,10 @@ var ObjectId = Schema.Types.ObjectId;
 //define schema for the posts, which store the comment as well
 var posts = mongoose.Schema({
 	postby: [{type: ObjectId, ref: 'User'}],
-    postto:[{type:ObjectId,ref:'User'}],
-	body: String, 
+  postto:[{type:ObjectId}],
+	body: String,
 	date: Date,
+    visibility: String,
 	comments: [{type: ObjectId, ref: 'Comment'}],
 });
 
@@ -26,12 +27,6 @@ var Comment = new Schema({
 });
 
 
-// var lostFound = new posts('lostfound', {
-//     location:{
-//         type: String,
-//         required: true,}
-// });
-
 // create the model for users and expose it to the app
 //module.exports = mongoose.model('User', userSchema);
 var Post = mongoose.model('Post', posts);
@@ -40,4 +35,3 @@ exports.Post = Post;
 // exports.lostFound = lostFound;
 
 //module.exports = mongoose.model('Profile', profileSchema);
-
