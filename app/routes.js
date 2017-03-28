@@ -3,11 +3,12 @@ var db = require('../config/database.js');
 var friends = require("mongoose-friends");
 var Status = require("mongoose-friends").Status;
 var Post  = require('../app/model/posts').Post;
+var lostFound = require('../app/model/lostFound').lostFound;
 var nodemailer = require("nodemailer");
 var moment = require('moment');
 
 module.exports = function(app, passport) {
-	
+
 	var smtpTransport = require("nodemailer-smtp-transport");
 	var mailOptions,host,link;
 	/* SMTP server */
@@ -42,10 +43,43 @@ module.exports = function(app, passport) {
 	//signup
 
 	//show the signup form
+
 	app.get('/signup', function(req,res){
 
 		//render the page and pass in any flash data if it exists
 		res.render('signup.ejs', { message: req.flash('signupMessage') });
+	});
+
+	app.get('/lostandfound', isLoggedIn, function(req,res){
+
+		lostFound.find({}, function(err, docs){
+		 res.render('lostFound.ejs',{
+				'postlist' : docs,
+				user : req.user,
+				// moment : moment(), // get the user out of session and pass to template
+				//link:"https//"+req.get('host')+"/addFriend?id="
+			});
+		});
+	});
+
+	app.post('/lostfoundpost', isLoggedIn, function(req, res,done){
+
+		var newlostFound = new lostFound();
+		newlostFound.postby = req.user._id;
+		newlostFound.body = req.body.message;
+		newlostFound.date = moment().format();
+		newlostFound.location = req.body.location;
+		newlostFound.contact.email = req.body.email;
+		newlostFound.contact.phone = req.body.phone;
+		newlostFound.save(function(error) {
+			if (!error) {
+			res.redirect(req.get('referer'));
+				 return done(null, lostFound);
+			 }
+			else{
+				console.log(error)
+			}
+		});
 	});
 
 	// process the signup form
@@ -57,7 +91,7 @@ module.exports = function(app, passport) {
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this ( the isLoggedIn function)
 	app.get('/profile', isLoggedIn, function(req,res){
-
+		link ="http://"+req.get('host');
 		Post.find({postto: req.user._id}, function(err, docs){
 		 res.render('profile.ejs',{
 				'postlist' : docs,
@@ -65,7 +99,7 @@ module.exports = function(app, passport) {
 				// moment : moment(), // get the user out of session and pass to template
 				//link:"https//"+req.get('host')+"/addFriend?id="
 			});
-		});	
+		});
 	});
 
 
@@ -76,14 +110,13 @@ module.exports = function(app, passport) {
 	});
 
 	app.post('/post', isLoggedIn, function(req,res, done){
-		console.log(req.body.message);
-		console.log(req.body.email);
 		User.findOne({'local.email':req.body.email}, function(err, u){
 		var newPost = new Post();
 		newPost.postby = req.user._id;
 		newPost.postto = u._id
 		newPost.body = req.body.message;
-		newPost.date = moment().format('llll');
+		newPost.date = moment().format();
+		newPost.visibility = req.body.visibility;
 		newPost.save(function(error) {
    		if (!error) {
 			res.redirect(req.get('referer'));
@@ -93,9 +126,10 @@ module.exports = function(app, passport) {
 				console.log(error)
 			}
 		});});
-	
+
 });
-	
+	// app.post('/comment',function(req))
+
 	app.get('/userlist', function(req, res) {
 	    var db = req.db;
 	    var collection = db.get('users');
@@ -105,7 +139,7 @@ module.exports = function(app, passport) {
 	        });
 	    });
 	});
-	
+
 	app.post('/addFriend', isLoggedIn, function(req, res) {
 	    // Get our form values. These rely on the "name" attributes
 		var db = req.db;
@@ -118,7 +152,7 @@ module.exports = function(app, passport) {
 	    {
 	    $addToSet:{
 	        friends : userFriend
-	    
+
 	    }}, function (err, doc) {
 	        if (err) {
 	            // If it failed, return error
@@ -175,9 +209,9 @@ module.exports = function(app, passport) {
                         throw err;
                     return done(null, user);
                 });
-			res.render('index.ejs', {});        
+			res.render('index.ejs', {});
         });
-	
+
 });
 	// process the signup from
 	app.post('/signup', passport.authenticate('local-signup', {
