@@ -14,12 +14,13 @@ var members = new Schema({
 
 var groupSchema = mongoose.Schema({
 	owner: [{type: ObjectId, ref: 'User'}],
-	image: {type: String, default: 'images/group'},
-	title: String,
+	image: {type: String, default: 'images/group.png'},
+	name: String,
 	description: String,
+	type:String,
 	//body: String,
-	members: [members],
-	posts: [{type: ObjectId, ref: 'Post'}]
+	members: [{type: ObjectId, ref: 'User'}],
+	posts: [{type: ObjectId, ref: 'Post'}],
 });
 
 

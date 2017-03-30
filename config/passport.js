@@ -106,6 +106,7 @@ module.exports = function(passport) {
                 newUser.birthday = bday;
                 // save the user
                 newUser.save(function(err) {
+                  console.log(newUser);
                     if (err)
                         throw err;
                     return done(null, newUser);

@@ -1,9 +1,9 @@
 ﻿.search{
     background: white;
     border: 1px solid white;
-    width: 400px;
+    max-width: 400px;
     border-radius: 20px;
-	padding-left: 5px;
+	   padding-left: 5px;
 }
 .otherbutton{
     position: relative;
@@ -22,7 +22,7 @@ html body{
     background-color: darkred;
     padding: 20px;
     border-radius: 25px;
-    position: absolute;
+    margin-left: 10%;
     width: 80%;
     height: 90%;
     left: 10%;
@@ -30,12 +30,13 @@ html body{
     color: white;
 }
 #createGroup{
-     float: right;
+    float: right;
 }
 #Groups{
-    width: 47%;
+    margin-top: 10px;
+    width: 100%;
     float: left;
-	height: 80%;
+    height: 40%
 }
 #holder{
 	height: 100%;
@@ -47,10 +48,10 @@ html body{
     float: left;
 }
 #suggested{
-	
-    width: 50%; 
-	height: 80%;
-    position: absolute;
+    margin-top: 10px;
+    position: relative;
+    width: 100%;
+	  height: 40%;
 }
 #copyright{
 	width: 95%;
@@ -61,21 +62,20 @@ html body{
     top: 92%;
     left: 2%;
 }
-h1{
+/*h1{
 	vertical-align:middle;
-	width:31%;
+	width:50%;
 	background-color:darkred;
 	color: white;
-    font-size: 2em;
-}
+  font-size: 2em;
+}*/
 h2{
 	vertical-align:middle;
-	float: right;
-	width: 47%;
-    text-align: center;
+	width: 50%;
+  text-align: center;
 	background-color:darkred;
 	color: white;
-    font-size: 2em;
+  font-size: 2em;
 }
 
 @charset "utf-8";
@@ -87,10 +87,6 @@ h2{
 	float: top;
 }
 
-textarea {
-	resize : none;
-	width: 98%;
-}
 .navbar-fixed {
 	top: 0;
 	z-index: 100;
@@ -104,7 +100,7 @@ textarea {
 	height: 100%;
 	margin: 0 5% 0 5%;
 	line-height: normal;
-	
+
 }
 
 div #tab {
@@ -167,7 +163,7 @@ div #tab button:hover {
 	line-height: normal;
 	z-index: 100;
 	width: 100%;
-	
+
 }
 
 .nav_links {
@@ -240,42 +236,4 @@ p {
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {
     display: block;
-}
-/* The Modal (background) */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-/* Modal Content */
-.modal-content {
-    background-color:  rgba(128,0,0,70); /* Black w/ opacity */
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 60%;
-}
-
-/* The Close Button */
-.close {
-    color: #aaaaaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
 }

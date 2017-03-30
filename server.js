@@ -15,9 +15,8 @@ var session = require('express-session');
 var moment = require('moment');
 var multer = require('multer');
 var configDB = require('./config/database.js');
-
 // configuration
-
+var server = require('http').createServer(app);
 
 
 mongoose.connect(configDB.url); // connect to our database
@@ -41,8 +40,8 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 //routes
-require('./app/routes.js')(app,passport); // load our routes and pass in our app and fully configure passport
+require('./app/routes.js')(app,server,passport); // load our routes and pass in our app and fully configure passport
 
 // launch
-app.listen(port);
+server.listen(port);
 console.log('The magic happens on port ' + port);

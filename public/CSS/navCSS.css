@@ -14,10 +14,6 @@ body {
 	float: top;
 }
 
-textarea {
-	resize : none;
-	width: 98%;
-}
 .navbar-fixed {
 	top: 0;
 	z-index: 100;
@@ -35,8 +31,6 @@ textarea {
 }
 
 #profLeft {
-	width:30%;
-	float:left;
 	padding: 16px;
 }
 
@@ -61,6 +55,9 @@ div #tab button {
 div #tab button:hover {
 	background-color: #ddd!important;
 }
+textarea{
+	width:100%;
+}
 
 /*
 #active {
@@ -69,10 +66,10 @@ div #tab button:hover {
 */
 
 #profRight {
-	width: 65%;
+	/*width: 65%;
 	padding: 16px ;
 	float: right;
-	margin-left:5%
+	margin-left:5%*/
 }
 
 .tabcontent {
@@ -83,7 +80,7 @@ div #tab button:hover {
 	background-color: maroon;
 	border-radius: 0px 15px 15px 15px;
 	width: 94%;
-	height: 94%;
+	/*height: 94%;*/
 	padding: 3%;
 }
 

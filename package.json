@@ -20,7 +20,8 @@
     "passport-facebook": "latest",
     "passport-google-oauth": "latest",
     "passport-local": "latest",
-    "passport-twitter": "latest"
+    "passport-twitter": "latest",
+    "socket.io": "^1.7.3"
   },
   "scripts": {
     "start": "node server.js"

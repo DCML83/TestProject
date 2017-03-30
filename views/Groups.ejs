@@ -3,94 +3,70 @@
 <head>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link href="CSS/navCSS.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="CSS/Group.css">
+<script src="JS/momentjs.js"></script>
 </head>
 
-<nav id="nav_bar">
-	<ul class="nav_links">
-		<li><a href="/">MUNSSN</a>
-		<li><a href="url">Friends</a>
-		<li><a href="/Group">Groups</a>
-      <li><a href="/lostandfound">Lost and Found</a>
-		<li><a href="/logout">Logout</a>
-		<li class="dropdown"><a href="url"><%= user.local.email%></a>
-  <div class="dropdown-content">
-    <a class="dropC" href="/profile">Profile</a>
-    <a class="dropC" href="#">Settings</a>
-    <a class="dropC" href="/logout">Log Out</a>
-  </div>
-	</ul>
-</nav>
-<div id="main">
+<div class="w3-bar w3-border  w3-text-white w3-collaspe " id="nav_bar">
+	<a href="#" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">MUNSSN</a>
+	<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hover-text-grey w3-padding-16">Group</a>
+	<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Friends</a>
+	<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Lost and Found</a>
+	<div class="w3-dropdown-hover w3-right">
+<button class="w3-button w3-hover-none w3-hover-text-grey"><img src="<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" ><%= user.name.first%></p></button>
+<div class="w3-dropdown-content w3-bar-block w3-cards">
+	<a href="/profile" class="w3-bar-item w3-button">profile</a>
+	<a href="#" class="w3-bar-item w3-button">Setting</a>
+	<a href="/logout" class="w3-bar-item w3-button">Logout</a>
+</div>
+</div>
+</div>
+
+<div id="main"class="w3-card-2">
 <div id="SearchBar">
     <input type="text" placeholder="Search..."class="search" />
     <button type="button"class="fa fa-search"style="background-color: whitesmoke; height:25px; width:35px; border-radius: 2px;"></button>
     <div id="createGroup">
-        <button type="button" class="otherbutton" id="myBtn">Create Group</button><br />
+        <button type="button" class="otherbutton" id="myBtn">Create Group</button><br>
     </div>
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-      <!-- Modal content -->
-      <div class="modal-content">
-        <span class="close">&times;</span>
+
+	</div>
+		<div id="id01" class="w3-modal">
+			<div class="w3-modal-content w3-grey" style="max-width:600px">
+				<div class="w3-container">
+				<span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
         <form action="/creategroup" method="post">
-        <label>name</label>  <input type ="text" name ="name" value=" "><br>
-        <textarea name="description" rows="4" placeholder="Enter description here."></textarea><br>
-        <input type="hidden" name="email" value="<%= user.local.email %>">
-        <select name="type">
-          <option value="public">Everyone</option>
-          <option value="private">Friends</option>
-        </select>
+        Name <br><input type="text" name="name" value="" class='w3-input w3-half'><br><br>
+				Description:<br>
+				<textarea name="description" rows="4" value="" class='w3-input' style="width:100%"placeholder="Enter Group description here."></textarea><br>
+				<select name="type">
+          <option value="public">public</option>
+          <option value="private">private</option>
+        </select><br><br>
         <button class="create" type="submit" >Create</button>
         </form>
       </div>
     </div>
-</div>
-    <div>
-        <div id="Groups">
+	</div>
+
+        <div>
             <h1>My Groups</h1>
-        </div>
-        <div id="divider">
+						<% groups.forEach(function(group){ %>
+											<img src="<%=group.image%>" class="w3-circle w3-center" alt="group avatar" height="50px" width="50px">
+											<p><%=group._id%></p>
+											<a href="/group/<%=group._id%>"><%=group.name%></a><br>
+
+
+
+					<% }) %>
+				</div>
+
             <div id="suggested">
-                <h2>Suggested Groups</h2>
+                <h1>Suggested Groups</h1>
             </div>
-        </div>
+
     </div>
-    <div id="copyright">
-        <h3>? ALL RIGHTS RESERVED</h3>
-    </div>
-</div>
-
-
-<script>
-// Get the modal
-var modal = document.getElementById('myModal');
-
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks the button, open the modal
-btn.onclick = function() {
-    modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
-</script>
-
 </body>
 </html>

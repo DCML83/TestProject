@@ -3,6 +3,7 @@ var db = require('../config/database.js');
 var friends = require("mongoose-friends");
 var Status = require("mongoose-friends").Status;
 var Post  = require('../app/model/posts').Post;
+var Group = require('../app/model/groups').Group;
 var lostFound = require('../app/model/lostFound').lostFound;
 var moment = require('moment');
 var multer = require('multer');
@@ -13,8 +14,8 @@ var nodemailer = require("nodemailer");
 var md5 = require("blueimp-md5");
 var path = require('path');
 var rootpath = path.dirname(require.main.filename);
-module.exports = function(app, passport) {
-
+module.exports = function(app, server, passport) {
+	var io = require('socket.io')(server);
 	var smtpTransport = require("nodemailer-smtp-transport");
 	var mailOptions,host,link;
 	/* SMTP server */
@@ -34,26 +35,11 @@ module.exports = function(app, passport) {
 		res.render('index.ejs',{ message: req.flash('signupMessage') }); // load the index.ejs file
 	});
 
-	//login
-
-	// show the login form
-	// app.get('/login', function(req, res) {
-	// 	// render the page and pass in any flash data if it exists
-	// 	res.render('login.ejs', { message: req.flash('loginMessage') });
+	// app.get('/signup', function(req,res){
+	//
+	// 	//render the page and pass in any flash data if it exists
+	// 	res.render('signup.ejs', { message: req.flash('signupMessage') });
 	// });
-
-	// process the login form
-	// app.post('/login, do all our passport stuff here);
-
-	//signup
-
-	//show the signup form
-
-	app.get('/signup', function(req,res){
-
-		//render the page and pass in any flash data if it exists
-		res.render('signup.ejs', { message: req.flash('signupMessage') });
-	});
 
 	app.get('/lostandfound', isLoggedIn, function(req,res){
 
@@ -66,13 +52,67 @@ module.exports = function(app, passport) {
 			});
 		});
 	});
+
 	app.get('/group', isLoggedIn, function(req,res, done){
+				// ids = req.user.group.map(function(id) { return ObjectId(id); });
+				Group.find({'_id': {$in: req.user.group}}, function(err,groups){
+
+					var property = [];
+					groups.forEach(function(gg){
+					console.log(gg);
+					var gp = {_id:gg._id,name : gg.name, image: gg.image};
+					property.push(gp);
+			});
 			res.render('Groups.ejs',{
 				user:req.user,
+				groups: property,
+			});
+		});
+	});
+app.get('/group/:id', isLoggedIn, function(req, res){
+	Group.findOne({'_id':req.params.id}, function(err, g){
+			console.log(g);
+			var pl=[];
+			res.render('Group-profile.ejs',{
+					user:req.user,
+					group:g,
+					postlist:pl,
 			});
 	});
+	});
 
+	app.post('/createGroup', isLoggedIn, function(req,res,done){
+		Group.find({'name':req.body.name}, function(err, group){
+			if (group){
+				console.log('group already exists')
+			}
+			var newGroup = new Group();
+			newGroup.owner= req.user._id;
+			newGroup.name = req.body.name;
+			newGroup.description = req.body.description;
+			newGroup.members = req.user._id;
+			newGroup.type = req.body.type;
+			newGroup.save(function(error) {
+					if (!error) {
+						User.findOne({'_id':req.user._id},function(err, user){
+							if (!err){
+								user.group.push(newGroup._id);
+								user.save(function(error){
+									return done(null, user);
+								});
+							}
+						});
 
+						 res.redirect(req.get('referer'));
+						 return done(null, newGroup);
+					 }
+					else{
+						console.log(error)
+					}
+				});
+		});
+
+	});
 	var type = upload.single('picture');
 	app.post('/lostfoundpost', type, isLoggedIn, function(req,res,done){
 		var tmp_path = req.file.path;
@@ -118,6 +158,7 @@ module.exports = function(app, passport) {
 	app.get('/profile', isLoggedIn, function(req,res){
 		link ="http://"+req.get('host');
 		Post.find({postto: req.user._id}, function(err, docs){
+			docs.reverse();
 		 res.render('profile.ejs',{
 				'postlist' : docs,
 				user : req.user,
@@ -136,22 +177,11 @@ module.exports = function(app, passport) {
 
 	app.post('/post', isLoggedIn, function(req,res, done){
 		User.findOne({'local.email':req.body.email}, function(err, u){
-		var newPost = new Post();
-		newPost.postby = req.user._id;
-		newPost.postto = u._id
-		newPost.body = req.body.message;
-		newPost.date = moment().format();
-		newPost.visibility = req.body.visibility;
-		newPost.save(function(error) {
-   		if (!error) {
-			res.redirect(req.get('referer'));
-    	   return done(null, newPost);
-   		 }
-			else{
-				console.log(error)
-			}
-		});});
-
+		newPost(req.user._id, u._id, req.body.message,req.body.visibility,req,res);
+	});
+});
+app.post('/gpost', isLoggedIn, function(req,res, done){
+	newPost(req.user._id, req.body.group_id, req.body.message," ",req,res);
 });
 	// app.post('/comment',function(req))
 
@@ -242,7 +272,7 @@ module.exports = function(app, passport) {
 	// process the signup from
 	app.post('/signup', passport.authenticate('local-signup', {
 		successRedirect : '/profile', // redirect to the secure profile section
-		failureRedirect : '/signup', // redirect back to the signup page if there is an error
+		failureRedirect : '/', // redirect back to the signup page if there is an error
 		failureFlash: true // allow flash messages
 	}));
 
@@ -252,6 +282,16 @@ module.exports = function(app, passport) {
 		failureRedirect : '/', // redirect back to the signup page if there is an error
 		failureFlash : true // allow flash messages
 	}));
+	app.get('/chatroom', isLoggedIn,function(req, res){
+	  res.render('chatroom.ejs',{
+			user: req.user,
+		});
+	});
+	io.on('connection', function(socket){
+  socket.on('chat message', function(msg){
+    io.emit('chat message', msg);
+  });
+});
 };
 
 function isLoggedIn(req, res, next) {
@@ -265,4 +305,22 @@ function isLoggedIn(req, res, next) {
 
 function generateHash(str) {
 	return bcrypt.hashSync(str, bcrypt.genSaltSync(8), null);
-};
+}
+
+function newPost(id, tid, m, v, req, res){
+	var newPost = new Post();
+	newPost.postby = id;
+	newPost.postto = tid
+	newPost.body = m;
+	newPost.date = moment().format();
+	newPost.visibility = v;
+	newPost.save(function(error) {
+		if (!error) {
+		res.redirect(req.get('referer'));
+			//  return done(null, newPost);
+		 }
+		else{
+			console.log(error)
+		}
+	});
+}

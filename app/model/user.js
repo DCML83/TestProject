@@ -20,6 +20,7 @@ var userSchema = mongoose.Schema({
 	Year: String,
 	image: {type: String,default: 'images/user.png'},
 	friends:[{type : ObjectId, ref: 'User' }],
+	group:[{type : ObjectId, ref: 'Group' }],
 });
 
 // methods

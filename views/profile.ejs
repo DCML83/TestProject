@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype HTML5>
 <html>
 <head>
 <meta charset="utf-8">
@@ -18,10 +18,12 @@
 	<p>some nonsense I guess</p>
 </div> -->
 <div class="w3-bar w3-border  w3-text-white w3-collaspe " id="nav_bar">
-	<a href="#" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">MUNSSN</a>
+	<a href="/profile" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">MUNSSN</a>
 	<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hover-text-grey w3-padding-16">Group</a>
 	<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Friends</a>
 	<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Lost and Found</a>
+	<a href="/chatroom" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">chatroom</a>
+
 	<div class="w3-dropdown-hover w3-right">
 <button class="w3-button w3-hover-none w3-hover-text-grey"><img src="<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" ><%= user.name.first%></p></button>
 <div class="w3-dropdown-content w3-bar-block w3-cards">
@@ -31,8 +33,8 @@
 </div>
 </div>
 </div>
-<div id="body_div">
-	<div id = "profLeft" class ="w3-third">
+<div id="body_div" >
+	<div id = "profLeft" class ="w3-third w3-moblie w3-center"">
 		<div class="w3-card">
 			<div class="w3-card-2 w3-red">
 				<h1> Info</h1></div>
@@ -48,7 +50,7 @@
 	</div>
 </div>
 
-	<div id = "profRight" class ="w3-twothird">
+	<div id = "profRight" class ="w3-twothird w3-moblie">
 
 		<div id = "tab">
 			<button class="tablink" onclick="openTab(event, 'Timeline')" id="defaultLoad">Timeline</button>
@@ -62,12 +64,27 @@
 					<form action="/post" method="post">
 					<textarea name="message" rows="4" placeholder="Enter message here."></textarea><br>
           <input type="hidden" name="email" value="<%= user.local.email %>">
-					<select name="visibility">
+					<select id="permission" name="visibility">
 						<option value="everyone">Everyone</option>
 						<option value="friends">Friends</option>
 						<option value="me">Only me</option>
-						<option value="select">Select...</option>
+						<option value="specific">Select...</option>
 					</select>
+
+						<div id="id01" class="w3-modal">
+							<div class="w3-modal-content" style="max-width:600px">
+								<div class="w3-container">
+										<span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+											<input type="checkbox" name="options[]" value="1" />1<br>
+											<input type="checkbox" name="options[]" value="2" />2<br>
+											<input type="checkbox" name="options[]" value="3" />3<br>
+											<input type="checkbox" name="options[]" value="4" />4<br>
+											<input type="checkbox" name="options[]" value="5" />5<br>
+				<p class="w3-button w3-grey" id="setfriends">set</p>
+			</div>
+			</div>
+					</div>
+					<input type="hidden" value="" id="friendlist">
 					<button class="post w3-button w3-white" type="submit"><i class="fa fa-pencil"></i> Post</button>
 					</form>
 				</div>
@@ -90,24 +107,20 @@
 </form>
 </div>
  <% }) %>
-			</div>
-			<div id="Schedule" class="tabcontent">
-				  <button onclick="document.getElementById('id01').style.display='block'" class="w3-button w3-white">Create Schedule</button>
-					<div id="id01" class="w3-modal">
-						<div class="w3-modal-content">
-		<div class="w3-container">
-			<span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-			<p>Enter Schedule Information</p>
-			form
-
-
-
-		</div>
 	</div>
-</div>
-
-
-
+			<div id="Schedule" class="tabcontent">
+				  <button onclick="document.getElementById('id02').style.display='block'" class="w3-button w3-white">Create Schedule</button>
+					<div id="id02" class="w3-modal">
+						<div class="w3-modal-content">
+							<div class="w3-container">
+								<span onclick="document.getElementById('id02').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+								<p>Enter Schedule Information</p>
+							</div>
+						</div>
+					</div>
+			</div>
+			<div id="Resume" class="tabcontent">
+				<p> resumen go here</P>
 			</div>
 		</div>
 

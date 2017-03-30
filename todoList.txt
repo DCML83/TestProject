@@ -1,0 +1,60 @@
+TeamProject to do List
+
+documentation
+	testing - aizaz
+
+index page -
+	logo missing (kier) need it at friday(tomorrow)
+	 functionality complete
+
+email confirmation:
+	needs to be tested
+
+setting page
+	aizaz working on template need it at friday(tomorrow)
+	-someone needs to take on the route
+friend -
+	suggest friends- no- kris
+		there is mongoose plugin
+	friend request -works
+		needs css to display it- someone takeover?
+
+profile
+	permission for profile-works -diego
+	permission for post- works -diego
+	post- works needs to be pretty and render- shawn
+	friends- works, but need to integrate and .pretty
+		render friend lists -Kris
+	friendship - works -kris
+	emoji- should we add? -shawn
+
+comment - no -shwan
+	will do it with socket.io
+
+group
+	create group- works
+	group post- no -shawn
+	group permission  -no -diego
+		Diego needs to copy and paste
+	group invitation - no- no idea, need some brainstorming(snowstorm is coming)
+
+
+resume - done -kris
+	need to add ‘if only friends can access it’
+	add” pdf viewer”
+
+
+lost and found
+	 map needs to completes-dingo
+	contact information to be implement-shawm
+
+
+polling -shawn and kris
+	nothing done
+
+schedule - shawn and diego
+	nothing done
+
+additional feature - chad chad -done
+	public chat room for all students
+	need additional css- someone can take over
