@@ -11,6 +11,9 @@
 <script src="JS/profileJS.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
 <script src="JS/momentjs.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
 </head>
 <body>
 <!-- <div id="banner">
@@ -25,7 +28,7 @@
 	<a href="/chatroom" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">chatroom</a>
 
 	<div class="w3-dropdown-hover w3-right">
-<button class="w3-button w3-hover-none w3-hover-text-grey"><img src="<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" ><%= user.name.first%></p></button>
+<button class="w3-button w3-hover-none w3-hover-text-grey"><img src="<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
 <div class="w3-dropdown-content w3-bar-block w3-cards">
 	<a href="/profile" class="w3-bar-item w3-button">profile</a>
 	<a href="#" class="w3-bar-item w3-button">Setting</a>
@@ -90,18 +93,22 @@
 				</div>
 
      <h2>List of Post</h2>
-<% postlist.forEach(function(post) { %>
+		 <input type ="hidden" value ="<%= postlist.length%>" id='length'/>
+<% postlist.forEach(function(post, index) { %>
 	<div class="w3-panel w3-card-2 w3-white">
-<form method="post" action="javascript:void 1" class="inline" id ="postform_<%= post._id %>">
+<form method="post" class="inline" id ="postform_<%= post._id %>">
 
     <p><%= post.body %></p>
     <br>
   <time id="then" datetime="<%= post.date%>"></time>
-    <div id ="comment_area">
+    <div id ="comment_area<%=index%>" name="haha im here">
+			<% post.comments.forEach(function(comments){%>
+				<p><%= comments.text%></p>
 
+			<%})%>
     </div>
-    <input type="text" name="comment" value="">
-    <button type="submit" name="post_id" value="<%= post._id %>" class="link-button" onclick="submitText(this)">comment
+    <input type="text" name="comment" id ='comment'>
+    <button type="submit" name="post_id" value="<%= post._id %>" id="comment_btn<%=index%>" alt="<%=index%>">comment
     </button>
 
 </form>
@@ -129,20 +136,21 @@
 
 </div>
 
-<script type ="text/javascript">
-  function submitText(event){
- 	 var form = event.form;
- 	var div  = form.querySelector('#comment_area');
- 		add(form, div);
-  }
-
-  function add(form ,div, s){
- 	var para = document.createElement("p");
- 	var node = document.createTextNode(form.comment.value);
- 	para.appendChild(node);
-    div.appendChild(para);
-    form.comment.value =""
- 	}
+<script>
+$()
+  // function submitText(event){
+ // 	 var form = event.form;
+ // 	var div  = form.querySelector('#comment_area');
+ // 		add(form, div);
+  // }
+	//
+  // function add(form ,div, s){
+ // 	var para = document.createElement("p");
+ // 	var node = document.createTextNode(form.comment.value);
+ // 	para.appendChild(node);
+  //   div.appendChild(para);
+  //   form.comment.value =""
+ // 	}
  </script>
 </body>
 </html>

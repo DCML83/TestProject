@@ -287,10 +287,31 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 			user: req.user,
 		});
 	});
+	//start connenction for  socket io
 	io.on('connection', function(socket){
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);
   });
+	socket.on('profile_comment',function(info){
+		User.findOne({'local.email':info.user_id}, function(err, user){
+			Post.findById(info.post_id,function(err, post){
+				var post_comment = {
+				text :info.comment,
+				date : moment().format(),
+				postby :user,};
+
+				post.comments.push(post_comment);
+				post.save(function(err){
+					if(err){
+						console.log("how this possible?")
+					}
+				});
+
+
+		});
+	});
+		io.emit('profile_comment', info.comment);
+});
 });
 };
 
