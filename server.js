@@ -18,6 +18,9 @@ var configDB = require('./config/database.js');
 // configuration
 var server = require('http').createServer(app);
 
+var monk = require('monk');
+var db = monk('localhost:27017/data');
+
 
 mongoose.connect(configDB.url); // connect to our database
 
@@ -38,7 +41,10 @@ app.use(session({ secret: 'ilovevodkavodkavodkavodka' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
-
+app.use(function(req,res,next){
+    req.db = db;
+    next();
+});
 //routes
 require('./app/routes.js')(app,server,passport); // load our routes and pass in our app and fully configure passport
 

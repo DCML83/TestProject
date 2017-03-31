@@ -12,29 +12,6 @@ $(document).ready(function() {
   });
 });
 
-// function signFunc() {
-// 	var email = document.getElementsByName('Email')[0].value;
-// 	var emailC = document.getElementsByName('EmailC')[0].value;
-// 	var pw = document.getElementsByName('Password')[0].value;
-// 	var pwc = document.getElementsByName('PasswordC')[0].value;
-// 	if (!email.endsWith("@mun.ca")){
-// 		alert("Email is not a @mun.ca email address");
-// 		return false;
-// 	}
-// 	if (email !== emailC){
-// 		alert("Email confirmation field does not match Email field.");
-// 		return false;
-// 	}
-// 	if (pw.length < 8){
-// 		alert("Password must be at least 8 characters in length.");
-// 		return false;
-// 	}
-// 	if (pw !== pwc){
-// 		alert("Password confirmation field does not match Password field.");
-// 		return false;
-// 	}
-// 	return true;
-// }
 
 function openTab(evt, tabName) {
 	"use strict";

@@ -52,7 +52,36 @@
 
 	</div>
 </div>
+<div id="friendsBox">
+		<% userlist.forEach(function(user) {%>
+		<form action="/requestFriend" method="post">
+		<%=user.name.first%> <%=user.name.last%>
+		<input type='hidden' name="email" value="<%=user.local.email%>" </p>
+		<button type="submit"> Add Friends </button>
+		</form>
+		<% }) %>
+		
+		
+		<% requestStatus.forEach(function(request) {%> 
+		<p>  <%= request.requester%> sending you a friend request%>
+		<form action ="/acceptRequest" method = "post"> 
+		<input type=text name="requester" value="<%=request.requester%>" </p>
+		<button type="submit"> Accept Request </button>
+		<button type="submit"> Deny Request </button> 
+		 
+		</form>
 
+		<% }) %>
+		
+		<% suggestedFriends.forEach(function(friend) {%>
+	
+		<form action="/requestFriend" method="post">
+		<input name='email' value='<%=friend.local.email%>'/>
+		<button type="submit"> Add Friend </button>
+		</form>
+		<% }) %>
+		</div>
+</div>
 	<div id = "profRight" class ="w3-twothird w3-moblie">
 
 		<div id = "tab">
@@ -110,6 +139,8 @@
     <input type="text" name="comment" id ='comment'>
     <button type="submit" name="post_id" value="<%= post._id %>" id="comment_btn<%=index%>" alt="<%=index%>">comment
     </button>
+    
+    
 
 </form>
 </div>

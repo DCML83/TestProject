@@ -1,7 +1,5 @@
 var User         = require('../app/model/user').User;
 var db = require('../config/database.js');
-var friends = require("mongoose-friends");
-var Status = require("mongoose-friends").Status;
 var Post  = require('../app/model/posts').Post;
 var Group = require('../app/model/groups').Group;
 var lostFound = require('../app/model/lostFound').lostFound;
@@ -13,6 +11,8 @@ var bcrypt = require('bcrypt-nodejs');
 var nodemailer = require("nodemailer");
 var md5 = require("blueimp-md5");
 var path = require('path');
+var friendsOfFriends = require('friends-of-friends');
+
 var rootpath = path.dirname(require.main.filename);
 module.exports = function(app, server, passport) {
 	var io = require('socket.io')(server);
@@ -156,18 +156,30 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this ( the isLoggedIn function)
 	app.get('/profile', isLoggedIn, function(req,res){
-		link ="http://"+req.get('host');
 		Post.find({postto: req.user._id}, function(err, docs){
-			docs.reverse();
-		 res.render('profile.ejs',{
-				'postlist' : docs,
-				user : req.user,
-				// moment : moment(), // get the user out of session and pass to template
-				//link:"https//"+req.get('host')+"/addFriend?id="
-			});
+			User.find({}, function(err, docs2){
+				var db = req.db;
+				var collection = db.collection('friendships');
+				console.log(collection);
+				collection.find({'requested':req.user._id}, function(err, request){
+					console.log(request);
+					var currentUserId = req.user;
+					currentUserId.getFriendsOfFriends(function(err, fof){
+					User.find({'_id':{$in:req.user.friends}},function(err, friends){
+					res.render('profile.ejs',{
+						'postlist' : docs,
+						userlist:docs2,
+						user: req.user,
+						friends: friends,
+						requestStatus: request,
+						suggestedFriends: fof,
+						});
+					});
+				});
+			});	
 		});
 	});
-
+	}); 
 
 	// logout
 	app.get('/logout', function(req, res) {
@@ -195,30 +207,50 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 	    });
 	});
 
-	app.post('/addFriend', isLoggedIn, function(req, res) {
-	    // Get our form values. These rely on the "name" attributes
-		var db = req.db;
-	    var userFriend = req.body.email;
-	    var collection = db.get('users');
-	    var thisUser = req.user;
-	    var id = req.user._id;
-	    var thisFriend = req.user.friends;
-	    thisUser.update(
-	    {
-	    $addToSet:{
-	        friends : userFriend
-
-	    }}, function (err, doc) {
-	        if (err) {
-	            // If it failed, return error
-	            res.send("There was a problem adding the information to the database.");
-	        }
-	        else {
-	            // And forward to success page
-	            res.redirect("/profile");
-	        }
-	    });
-	    });
+	app.post('/requestFriend', isLoggedIn, function(req, res){
+		User.findOne({'local.email':req.body.email}, function(err, u) {
+			if(err) {console.log(err);}else{
+			var friendToRequest = u._id;
+			var currentUserId = req.user;
+			currentUserId.friendRequest(friendToRequest, function (err, request) {
+	           console.log('request', request);
+			    res.redirect(req.get('referer'));
+			    
+			});
+			}
+		});
+	});
+	
+	app.post('/denyRequest', isLoggedIn, function (req, res){
+		var friendToDeny = req.body.requester;
+		var currentUserId = req.user;
+		currentUserId.denyRequest(friendToDeny, function (err, denied) {
+			res.redirect(req.get('referer'));
+		 
+		    console.log('denied', denied);
+		    // denied 1 
+		});
+	});
+	
+	app.post('/acceptRequest', isLoggedIn, function (req, res){
+		var friendToAdd = req.body.requester;
+		var currentUserId = req.user;
+		currentUserId.acceptRequest(friendToAdd, function (err, friendship) {
+		User.findOne({'_id':friendToAdd}, function(err, user){
+			user.friends.push(req.user);
+			user.save();
+		});
+		User.findOne({'_id':req.user}, function(err, user){
+			user.friends.push(friendToAdd);
+			user.save();
+		});
+           console.log('friendship', friendship);
+		    res.redirect(req.get('referer'));
+		
+			});
+			
+		});
+	
 	app.get('/profile-temp', isLoggedIn, function(req,res){
 
 		if(req.user.local.active){

@@ -1,6 +1,6 @@
 //app/models/user.js
 //load modules
-var friends = require("mongoose-friends");
+//var friends = require("mongoose-friends");
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var ObjectId = mongoose.Schema.Types.ObjectId;
@@ -25,7 +25,17 @@ var userSchema = mongoose.Schema({
 
 // methods
 // generating a hash
-userSchema.plugin(friends({pathName: "Friends"}));
+//userSchema.plugin(friends({pathName: "Friends"}));
+
+var options = { 
+	    personModelName:            'user',
+	    friendshipModelName:        'Friend_Relationships', 
+	    friendshipCollectionName:   'friendships',
+	};
+
+var FriendsOfFriends = require('friends-of-friends')(mongoose,options);
+
+userSchema.plugin(FriendsOfFriends.plugin, options);
 
 userSchema.methods.generateHash = function(password) {
 	return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
@@ -38,6 +48,6 @@ userSchema.methods.validPassword = function(password){
 
 // create the model for users and expose it to the app
 
-var User = mongoose.model('User', userSchema);
+var User = mongoose.model(options.personModelName, userSchema);
 
 module.exports = {User: User};
