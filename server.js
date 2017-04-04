@@ -17,7 +17,6 @@ var multer = require('multer');
 var configDB = require('./config/database.js');
 // configuration
 var server = require('http').createServer(app);
-
 var monk = require('monk');
 var db = monk('localhost:27017/data');
 

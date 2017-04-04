@@ -18,18 +18,17 @@ var userSchema = mongoose.Schema({
 	gender:String,
 	Major:String,
 	Year: String,
+	visibility:{type: String,default: 'everyone'},
 	image: {type: String,default: 'images/user.png'},
 	friends:[{type : ObjectId, ref: 'User' }],
 	group:[{type : ObjectId, ref: 'Group' }],
 });
 
-// methods
-// generating a hash
-//userSchema.plugin(friends({pathName: "Friends"}));
 
-var options = { 
-	    personModelName:            'user',
-	    friendshipModelName:        'Friend_Relationships', 
+
+var options = {
+	    personModelName:            'User',
+	    friendshipModelName:        'Friend_Relationships',
 	    friendshipCollectionName:   'friendships',
 	};
 

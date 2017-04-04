@@ -5,11 +5,11 @@ var ObjectId = Schema.Types.ObjectId;
 
 //define schema for the lost and found,
 var lostFound = new Schema({
-	postby: [{type: ObjectId, ref: 'User'}],
+	postby: {type: ObjectId, ref: 'User'},
 	body: String,
 	date: Date,
 	picture: String,
-  location: String,
+  location:String,
 	contact:{
 		phone: {type: String,require :true},
     email:{type:String, require:true}},

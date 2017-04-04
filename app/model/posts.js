@@ -10,8 +10,8 @@ var ObjectId = Schema.Types.ObjectId;
 
 //define schema for the posts, which store the comment as well
 var posts = mongoose.Schema({
-	postby: [{type: ObjectId, ref: 'User'}],
-  postto:[{type:ObjectId}],
+	postby: {type: ObjectId, ref: 'User'},
+  postto:{type:ObjectId},
 	body: String,
 	date: Date,
   visibility: String,

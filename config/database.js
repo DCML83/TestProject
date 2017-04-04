@@ -1,3 +1,3 @@
 module.exports = {
-	'url' : 'localhost:27017/test' // looks like mongodb://<user>:<pass>@mongo.onmodulus.net:27017/lallaal
+	'url' : 'localhost:27017/data' // looks like mongodb://<user>:<pass>@mongo.onmodulus.net:27017/lallaal
 };

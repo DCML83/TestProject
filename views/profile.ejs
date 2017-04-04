@@ -3,14 +3,16 @@
 <head>
 <meta charset="utf-8">
 <title>MUNSSN-Profile</title>
-<link href="CSS/navCSS.css" rel="stylesheet" type="text/css">
+<link href="../CSS/navCSS.css" rel="stylesheet" type="text/css">
+<link href="../CSS/eiCSS.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-<script src="JS/profileJS.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
-<script src="JS/momentjs.js"></script>
+<script src="../JS/profileJS.js"></script>
+<script src="../JS/eiJS.js"></script>
+<script src="../JS/momentjs.js"></script>
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 
@@ -25,10 +27,11 @@
 	<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hover-text-grey w3-padding-16">Group</a>
 	<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Friends</a>
 	<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Lost and Found</a>
+	<a href="/coursepoll" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">Course Poll</a>
 	<a href="/chatroom" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">chatroom</a>
 
 	<div class="w3-dropdown-hover w3-right">
-<button class="w3-button w3-hover-none w3-hover-text-grey"><img src="<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
+<button class="w3-button w3-hover-none w3-hover-text-grey"><img src="../<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
 <div class="w3-dropdown-content w3-bar-block w3-cards">
 	<a href="/profile" class="w3-bar-item w3-button">profile</a>
 	<a href="#" class="w3-bar-item w3-button">Setting</a>
@@ -37,52 +40,70 @@
 </div>
 </div>
 <div id="body_div" >
-	<div id = "profLeft" class ="w3-third w3-moblie w3-center"">
+	<div id = "profLeft" class ="w3-third w3-moblie w3-center">
 		<div class="w3-card">
 			<div class="w3-card-2 w3-red">
 				<h1> Info</h1></div>
-
-    <img src="<%=user.image%>" class="w3-circle" width="100%">
+				<div class=' w3-center'>
+				<div class="box w3-margin" >
+      <img width="200px" height="200px" src="../<%=user.image%>"/>
+         <div class="mask">
+        <a  class="link" title="Upload new image" onclick="document.getElementById('profile_image_modal').style.display='block'">Upload new image</a>
+         </div>
+    </div>
+	</div>
+  <div id="profile_image_modal" class="w3-modal">
+    <div class="w3-modal-content" style="max-width:600px">
+      <div class="w3-container">
+        <form action='/edit_profile_image' method='post'>
+        <span onclick="document.getElementById('profile_image_modal').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <input type="file" name='picture' onchange="previewFile()"><br><br>
+		      <img src="" height="200" alt="Image preview..." class="prev"><br><br>
+     	<button type='submit'>Submit</button>
+    </form>
+      </div>
+    </div>
+  </div>
     <div class="w3-container">
-      <h4><b><%=user.name.first%> <%=user.name.last%></b></h4>
-      <p>year of <%=user.Year%></p>
-			<p>Major <%= user.Major%></P>
-			<p>Birthday <%= user.birthday%></p>
+      <h4><b><%=owner.name.first%> <%=owner.name.last%></b></h4>
+      <p>Year <%=owner.Year%></p>
+			<p>Major <%= owner.Major%></P>
+			<p>Birthday <%= owner.birthday%></p>
 		</div>
 
 	</div>
-</div>
-<div id="friendsBox">
-		<% userlist.forEach(function(user) {%>
-		<form action="/requestFriend" method="post">
-		<%=user.name.first%> <%=user.name.last%>
-		<input type='hidden' name="email" value="<%=user.local.email%>" </p>
-		<button type="submit"> Add Friends </button>
-		</form>
-		<% }) %>
-		
-		
-		<% requestStatus.forEach(function(request) {%> 
-		<p>  <%= request.requester%> sending you a friend request%>
-		<form action ="/acceptRequest" method = "post"> 
-		<input type=text name="requester" value="<%=request.requester%>" </p>
-		<button type="submit"> Accept Request </button>
-		<button type="submit"> Deny Request </button> 
-		 
-		</form>
+	<div class="w3-contianer w3-card-3 w3-blue">
+	<% if(owner._id == user._id){%>
 
+
+		<% requestStatus.forEach(function(user) {%>
+		<p>  <%=user.requester%> sending you a friend request</p>
+			<time id="then" datetime="<%= user.dateAccepted%>"></time>
+		<form action ="/acceptRequest" method = "post">
+		<input type="hidden" name="requester" value="<%=user.requester.name.first%>" </p>
+		<button type="submit"> Accept Request </button>
+		<button type="submit"> Deny Request </button>
+		</form>
 		<% }) %>
-		
+
+
+		<h1> suggested Friends</h1>
 		<% suggestedFriends.forEach(function(friend) {%>
-	
 		<form action="/requestFriend" method="post">
-		<input name='email' value='<%=friend.local.email%>'/>
+				<h3><%=friend.name.first %> <%=friend.name.last%></h3>
+		<input type ='hidden' name='email' value='<%=friend.local.email%>'/>
 		<button type="submit"> Add Friend </button>
 		</form>
 		<% }) %>
+		<% } %>
+		<h1>My Friends</h1>
+		<% friends.forEach(function(friend) {%>
+			<h3><%=friend.name.first %> <%=friend.name.last%></h3>
+		<% }) %>
 		</div>
 </div>
-	<div id = "profRight" class ="w3-twothird w3-moblie">
+
+	<div id = "profRight" class ="w3-twothird w3-moblie w3-margin-top">
 
 		<div id = "tab">
 			<button class="tablink" onclick="openTab(event, 'Timeline')" id="defaultLoad">Timeline</button>
@@ -95,7 +116,7 @@
 				<div id="postBox">
 					<form action="/post" method="post">
 					<textarea name="message" rows="4" placeholder="Enter message here."></textarea><br>
-          <input type="hidden" name="email" value="<%= user.local.email %>">
+          <input type="hidden" name="email" value="<%= owner.local.email %>">
 					<select id="permission" name="visibility">
 						<option value="everyone">Everyone</option>
 						<option value="friends">Friends</option>
@@ -121,26 +142,29 @@
 					</form>
 				</div>
 
-     <h2>List of Post</h2>
+     <h2 class="w3-text-white">List of Post</h2>
 		 <input type ="hidden" value ="<%= postlist.length%>" id='length'/>
 <% postlist.forEach(function(post, index) { %>
 	<div class="w3-panel w3-card-2 w3-white">
 <form method="post" class="inline" id ="postform_<%= post._id %>">
-
+		<img src='<%=post.postby.image%>' width='50' height="50">
+		<span> <%=post.postby.name.first%> <%=post.postby.name.last%></span> <br> <time id="then" datetime="<%= post.date%>"></time>
     <p><%= post.body %></p>
     <br>
-  <time id="then" datetime="<%= post.date%>"></time>
-    <div id ="comment_area<%=index%>" name="haha im here">
-			<% post.comments.forEach(function(comments){%>
-				<p><%= comments.text%></p>
 
+    <div id ="comment_area<%=index%>"  class='w3-card w3-white w3-margin'>
+			<% post.comments.forEach(function(comments){%>
+				<div class='w3-card-2 w3-white'>
+
+				<p><%= comments.text%></p>
+			</div>
 			<%})%>
     </div>
-    <input type="text" name="comment" id ='comment'>
+    <input type="text" name="comment" id ='comment' style="width:80%">
     <button type="submit" name="post_id" value="<%= post._id %>" id="comment_btn<%=index%>" alt="<%=index%>">comment
     </button>
-    
-    
+
+
 
 </form>
 </div>
@@ -166,22 +190,5 @@
 	</div>
 
 </div>
-
-<script>
-$()
-  // function submitText(event){
- // 	 var form = event.form;
- // 	var div  = form.querySelector('#comment_area');
- // 		add(form, div);
-  // }
-	//
-  // function add(form ,div, s){
- // 	var para = document.createElement("p");
- // 	var node = document.createTextNode(form.comment.value);
- // 	para.appendChild(node);
-  //   div.appendChild(para);
-  //   form.comment.value =""
- // 	}
- </script>
 </body>
 </html>
