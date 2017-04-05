@@ -112,7 +112,15 @@ textarea{
 	width: 100%;
 
 }
-
+#navDemo{
+	border: 0;
+	background-color:maroon;
+	border-radius: 0px;
+	margin: 0 ;
+	line-height: normal;
+	z-index: 100;
+	width: 100%;
+}
 .nav_links {
 	margin: 0 5% 0 0;
 }

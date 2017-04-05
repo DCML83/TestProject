@@ -4,6 +4,7 @@ var Post  = require('../app/model/posts').Post;
 var Group = require('../app/model/groups').Group;
 var lostFound = require('../app/model/lostFound').lostFound;
 var Poll= require('../app/model/poll').Poll;
+var Schedule = require('../app/model/schedule').Schedule;
 var moment = require('moment');
 var multer = require('multer');
 var upload = multer({ dest:__dirname + '/public/upload/temp' });
@@ -14,8 +15,7 @@ var md5 = require("blueimp-md5");
 var path = require('path');
 var friendsOfFriends = require('friends-of-friends');
 var rootpath = path.dirname(require.main.filename);
-
-
+var type = upload.single('picture');
 module.exports = function(app, server, passport) {
 	var io = require('socket.io')(server);
 	var smtpTransport = require("nodemailer-smtp-transport");
@@ -46,29 +46,40 @@ module.exports = function(app, server, passport) {
 	app.get('/lostandfound', isLoggedIn, function(req,res){
 
 		lostFound.find({}).populate('postby').exec(function(err, docs){
+			var collection = req.db.collection('friendships');
+			collection.find({'requested':req.user._id, 'status':'Pending'},function(err, request){
 		 res.render('lostFound.ejs',{
 				'postlist' : docs,
 				user : req.user,
+				requestStatus:request,
 			});
+		});
 		});
 	});
 
 	app.get('/group', isLoggedIn, function(req,res, done){
 		Group.find({'_id': {$in: req.user.group}}, function(err,groups){
-			var property = [];
-			res.render('Groups.ejs',{
+			var collection = req.db.collection('friendships');
+			collection.find({'requested':req.user._id, 'status':'Pending'},function(err, request){
+				res.render('Groups.ejs',{
 				user:req.user,
 				groups: groups,
+				requestStatus:request,
+			});
 			});
 		});
 	});
 app.get('/group/:id', isLoggedIn, function(req, res){
 	Group.findOne({'_id':req.params.id}, function(err, g){
 			var pl=[];
+			var collection = req.db.collection('friendships');
+			collection.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
 			res.render('Group-profile.ejs',{
 					user:req.user,
 					group:g,
 					postlist:pl,
+					requestStatus:request,
+			});
 			});
 	});
 	});
@@ -106,7 +117,6 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 		});
 
 	});
-	var type = upload.single('picture');
 	app.post('/lostfoundpost', type, isLoggedIn, function(req,res,done){
 		console.log(req.body);
 		var tmp_path = req.file.path;
@@ -148,17 +158,59 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 // it take user's id and query the record from database and update the path
 // for the user image
 app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
+	console.log(req.file);
+	var tmp_path = req.file.path;
+	var mimetype = req.file.mimetype.split("/");
+	var extension = mimetype[1];
+	var name  = md5(req.file.orignalname);
+	destination ='upload/profile/' + name+"."+extension;
+	var target_path = rootpath + '/public/'+destination;
+	var src = fs.createReadStream(tmp_path);
+	var dest = fs.createWriteStream(target_path);
+	src.pipe(dest);
+	src.on('end', function() {});
+	src.on('error', function(err) { console.log(err); });
+	User.findOne({'_id':req.user._id}, function(err, user){
+		user.image =destination;
 
+		user.save(function(err){
+			if(err){
+				console.log(err);
+			}else{
+				res.redirect(req.get('referer'));
+			}
+		})
+	});
 });
 
+app.post('/saveDate', isLoggedIn, function(req, res, done){
+	var newSchedule = new Schedule();
+		newSchedule.text = req.body.cName;
+		console.log(req.body.cName);
+		newSchedule.start_date = req.body.sDate;
+		newSchedule.end_date = req.body.eDate;
+		var pre = new Date(req.body.sDate);
+		var post = new Date(req.body.eDate);
+		var timeTotal = (post-pre)/1000;
+		newSchedule.rec_type = "week_1___"+req.body.options;
+		newSchedule.event_length = "7200";
+		newSchedule.owner = req.user;
+		newSchedule.save(function(error){
+			if (!error){
+				res.redirect(req.get('referer'));
+				return done(null, newSchedule);
+			}
+		});
 
+});
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this ( the isLoggedIn function)
 	app.get('/profile', isLoggedIn, function(req,res){
 		var currentUser = req.user;
 		Post.find({postto: currentUser._id}).populate('postby').exec(function(err, posts){
-				var collection = req.db.collection('friendships');
-				collection.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
+				var col = req.db.collection('friendships');
+				col.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
+						console.log(request);
 						var suggested =[];
 						currentUser.getFriendsOfFriends(function(err, fof){
 							var suggested = fof;
@@ -166,6 +218,7 @@ app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
 					 			User.find({'Major':currentUser.Major},function(err, users){suggested = users});
 							}
 							User.find({'_id':{$in:currentUser.friends}},function(err, friends){
+								Schedule.find({'text': 'dadsad' }, function(err, sched){
 								res.render('profile.ejs',{
 									postlist: posts,
 									user: req.user,
@@ -173,12 +226,14 @@ app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
 									friends: friends,
 									requestStatus: request,
 									suggestedFriends: suggested,
+									sendSched: sched,
 								});
 							});
 						});
 					});
 				});
 			});
+		});
 
 			app.get('/profile/:id', isLoggedIn, function(req,res){
 				var owner = req.params.id;
@@ -235,24 +290,20 @@ app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
 								});
 							}
 						});
-						// var currentUser = req.user;
-						// var collection = req.db.collection('friendships');
-						// collection.find({'requested':currentUser._id, 'status':'Pending'}, function(err, request){
-						// 		var suggested =[];
-						// 		currentUser.getFriendsOfFriends(function(err, fof){
-						// 			var suggested = fof;
-						// 			if(fof.length == 0){
-						// 	 			User.find({'Major':currentUser.Major},function(err, users){suggested = users});
-						// 			}
+						var currentUser = req.user;
+						var collection = req.db.collection('friendships');
+						collection.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
+
 									User.find({'_id':{$in:sid.friends}},function(err, friends){
 										res.render('profile.ejs',{
 											postlist: allowed_posts,
 											user: req.user,
 											owner:sid,
+											requestStatus:request,
 											friends: friends,
 
 										});
-
+									});
 
 						});
 });
@@ -322,7 +373,7 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 			var friendToRequest = u._id;
 			var currentUserId = req.user;
 			currentUserId.friendRequest(friendToRequest, function (err, request) {
-	           console.log('request', request);
+	        console.log('request', request);
 			    res.redirect(req.get('referer'));
 
 			});

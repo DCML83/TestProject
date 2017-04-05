@@ -12,28 +12,33 @@
 
 </head>
 <body>
-<!-- <div id="banner">
-	<h2>MUNSSN</h2>
-	<p>There will be a banner here</p>
-</div> -->
 
+<div class="w3-top w3-moblie">
 <div class="w3-bar w3-border w3-text-white "id="nav_bar">
 	<span class="w3-bar-item"></span>
-<img src="/images/MUN_Logo.png" class="w3-bar-item" height="80" width="200">
+<h1 class="w3-bar-item">MUNSSN</h1>
   <span  class="w3-bar-item w3-right"><form action="/login" method="post">
-		<span  class="w3-bar-item">Email:<br><input type="text" name="email" value=""class="w3-border " ></span>
-		<span  class="w3-bar-item" >Password:<br><input type="password" name="password" value="" class=" w3-border " ></span>
-	<span  class="w3-bar-item"> <button type="submit" class="w3-button w3-red w3-padding-16">Log In</button></span>
+		<span class="w3-bar-item w3-small" >Email:<br><input type="text" name="email" value=""class="w3-border " ></span>
+		<span  class="w3-bar-item w3-small" >Password:<br><input type="password" name="password" value="" class=" w3-border " ></span>
+	<span  class="w3-bar-item w3-small"> <button type="submit" class="w3-button w3-red w3-padding-16">Log In</button></span>
 	</form></span>
-	  <span  class="w3-bar-item w3-right w3-medium"></span>
 </div>
-<br>
+</div>
 
-<div id="body_div">
-	<div id = "profLeft">
-		<h1> logo go here</h1>
+<div class="w3-moblie w3-container w3-content" style="max-width:1400px;margin-top:100px">
+	<div id = "profLeft"class =" w3-half w3-moblie" >
+		<div class="w3-container  w3-center">
+		<img src="/images/MUN_Logo.png" class="w3-bar-item" height="150px" width="300px">
+		<h4> Synergy - Love - Inspiration</h4>
+		</div>
+		<div class="w3-container w3-margin-left w3-center">
+			<h2 class="w3-wide">Kinectic</h2>
+				<h2 class="w3-wide">Innovation</h2>
+					<h2 class="w3-wide">Restitution</h2>
+						<h2 class="w3-wide" >Socialiaztion</h2>
+					</div>
 	</div>
-	<div class="w3-half w3-container">
+	<div  class=" w3-half w3-moblie w3-margin-top w3-round w3-small ">
 		<h1 >Create a New Account</h1>
 		<h4> It’s free for Our MUN students</h4>
 				<form class="signForm" action="/signup" method="post" >
@@ -45,7 +50,7 @@
 					<input class="iBox w3-input w3-border w3-round w3-white" type="password" name="passwordC" placeholder="Password Confirm" required><br>
 					<input class="w3-margin-right w3-third w3-input w3-border w3-round w3-white" type="text" name="schoolyear" placeholder="School Year"required>
 					<input class="w3-third w3-input w3-border w3-round w3-white" type="text" name="major"  placeholder="Major" required><br><br>
-					<h3>Birthday</h3>
+					<h4>Birthday</h4>
 					<!-- These are the select elements we will target -->
 					<select id="dobday" name="day"></select>
 					<select id="dobmonth" name = "month"></select>
