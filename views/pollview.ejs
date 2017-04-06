@@ -60,6 +60,7 @@
 
     <h3><%=poll.body%></h3>
     <h4><%=poll.course%></h4>
+				<p>Total Vote<%=poll.__v%></p>
 			<div id='option_area<%=index%>'>
 
     <% poll.options.forEach(function(p){%>
@@ -69,7 +70,8 @@
 					$('#vote'+<%=index%>).hide();
 				});
 				</script>
-				 <div class='w3-card'style='max-width:600px'><div class='w3-card w3-grey'style='width:<%=(p.total_vote/poll.__v)*100 %>%'><%=p.text%></div></div>
+				<p><%=p.text%></p>
+				 <div class='w3-card'style='max-width:600px'><div class='w3-card w3-grey'style='width:<%=(p.total_vote/poll.__v)*100 %>%'><%=(p.total_vote/poll.__v)*100 %>%</div></div>
 			<%} else {%>
 				<input type="radio" name="options[]" value="<%=p._id%>"><%=p.text%><br>
 				<%}%>

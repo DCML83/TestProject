@@ -76,7 +76,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 					<button class="w3-button"><img src="../<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
 					<div class="w3-dropdown-content w3-bar-block w3-card-4">
 						<a href="/profile" class="w3-bar-item w3-button">profile</a>
-						<a href="#" class="w3-bar-item w3-button">Setting</a>
+						<a href="/setting" class="w3-bar-item w3-button">Setting</a>
 						<a href="/logout" class="w3-bar-item w3-button">Logout</a>
 					</div>
 				</div>
@@ -127,7 +127,13 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
       <p><i class="fa fa-calendar-o" ></i>School Year <%=owner.Year%></p>
 			<p><i class="fa fa-graduation-cap" ></i>Major in <%= owner.Major%></P>
 			<p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i>Birthday <%= owner.birthday%> </p>
-		</div>
+      <% if(owner._id != user._id){%>
+      <form action="/requestFriend" method="post">
+      <input type ='hidden' name='email' value='<%=owner.local.email%>'/>
+      <button type="submit"> Add Friend </button>
+      </form>
+      <%}%>
+  	</div>
 
 
 	<div class="w3-contianer w3-card-3 w3-blue">
@@ -159,7 +165,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 		<div id = "tlBox">
 			<div id="Timeline" class="tabcontent">
 
-			    <div class="w3-container w3-padding">
+			    <div id ='posting' class="w3-container w3-padding">
 					<form action="/post" method="post">
 					<textarea name="message" rows="4" placeholder="Enter message here."></textarea><br>
           <input type="hidden" name="email" value="<%= owner.local.email %>">
@@ -214,6 +220,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 		 <% }) %>
 	</div>
 			<div id="Schedule" class="tabcontent">
+        	<% if(owner._id == user._id){%>
 				  <button onclick="document.getElementById('id02').style.display='block'" class="w3-button w3-white">Create Schedule</button>
 					<br><br>
 					<div id="id02" class="w3-modal">
@@ -245,7 +252,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 					</div>
 					<br>
 					<br>
-					<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:100%;'>
+          <%}%>
+					<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:80%;'>
 						<div class="dhx_cal_navline">
 							<div class="dhx_cal_prev_button">&nbsp;</div>
 							<div class="dhx_cal_next_button">&nbsp;</div>
@@ -262,7 +270,15 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 					</div>
 				</div>
 				<div id="Resume" class="tabcontent">
-					<p> resumen go here</P>
+          	<% if(owner._id == user._id){%>
+					<form method="post" enctype="multipart/form-data" action="/uploadresume">
+			   		<input type="file" name='pdf'/>
+			   		<input type="submit" value="Submit">
+			 			</form>
+            <%}%>
+            <embed src="../<%=owner.resume%>" id ='resume' width="100%" height="100%" />
+
+ 			</div>
 					</div>
 
 			</div>
@@ -303,6 +319,37 @@ $(function(){
 				 minYear: 2012
 
 	 });
+});
+
+function findUser(){
+  <% for (var i = 0; i <  owner.friends.length; i++){ %>
+    if('<%=owner.friends[i]%>' == '<%=user._id%>'){
+      return true;
+    }
+  <%  } %>
+  return false;
+}
+$(document).ready(function(){
+
+  $('#resume').hide();
+  $('#posting').hide();
+  $('#scheduler_here').hide()
+  if ('<%=owner._id%>'== '<%=user._id%>'){
+      $('#resume').show();
+      $('#scheduler_here').show();
+    }
+      else if (findUser()) {
+        $('#resume').show();
+        $('#scheduler_here').show();
+      }
+  if('<%=owner.visibility%>' =='everyone'){
+    $('#posting').show();
+  }else if(<%=owner.visibility%> =='friends'){
+    if (findUser()){
+      $('#posting').show();
+    }
+  }
+
 });
 </script>
 </body>

@@ -8,18 +8,18 @@ var url = '//cdn.mozilla.net/pdfjs/helloworld.pdf';
 // PDFJS.disableWorker = true;
 
 // The workerSrc property shall be specified.
-PDFJS.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+PDFJS.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
 
 // Asynchronous download of PDF
 var loadingTask = PDFJS.getDocument(url);
 loadingTask.promise.then(function(pdf) {
   console.log('PDF loaded');
-  
+
   // Fetch the first page
   var pageNumber = 1;
   pdf.getPage(pageNumber).then(function(page) {
     console.log('Page loaded');
-    
+
     var scale = 1.5;
     var viewport = page.getViewport(scale);
 

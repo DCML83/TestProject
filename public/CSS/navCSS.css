@@ -192,3 +192,23 @@ p {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+#EditBox{
+    /*color: whitesmoke;*/
+    background-color:darkred;
+    /*border-radius: 5px;
+    padding: 5px;
+    border: 1px solid grey;
+    position: absolute;
+    left: 25%;
+    top: 10%;*/
+}
+#CurrentInfoBox{
+    /*color: whitesmoke;*/
+    background-color:darkred;
+    /*border-radius: 5px;
+    padding: 5px;
+    border: 1px solid grey;
+    position: absolute;
+    top: 10%;*/
+}

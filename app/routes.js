@@ -10,7 +10,6 @@ var multer = require('multer');
 var upload = multer({ dest:__dirname + '/public/upload/temp' });
 var fs = require('fs');
 var bcrypt = require('bcrypt-nodejs');
-var nodemailer = require("nodemailer");
 var md5 = require("blueimp-md5");
 var path = require('path');
 var friendsOfFriends = require('friends-of-friends');
@@ -18,19 +17,16 @@ var rootpath = path.dirname(require.main.filename);
 var type = upload.single('picture');
 module.exports = function(app, server, passport) {
 	var io = require('socket.io')(server);
-	var smtpTransport = require("nodemailer-smtp-transport");
+	var nodemailer = require("nodemailer");
 	var mailOptions,host,link;
-	/* SMTP server */
+	var smtpTransport = nodemailer.createTransport("SMTP",{
+	  service: "gmail",
+	  auth:{
+	      user: "multiculturalteam67@gmail.com",
+	      pass: "qwe12332"
+	    }
+	  });
 
-	var smtpTransport = nodemailer.createTransport(smtpTransport({
-		host: "smtp.gmail.com",
-   	 	secureConnection : false,
-   		port: 587,
-		auth:{
-				user: "multiculturalteam67@gmail.com",
-				pass: "qwe12332"
-			}
-		}));
 
 	//home page
 	app.get('/', function(req, res) {
@@ -73,7 +69,7 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 	Group.findOne({'_id':req.params.id}, function(err, g){
 			var pl=[];
 			var collection = req.db.collection('friendships');
-			collection.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
+			collection.find({'requested':req.user._id, 'status':'Pending'},function(err, request){
 			res.render('Group-profile.ejs',{
 					user:req.user,
 					group:g,
@@ -83,7 +79,15 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 			});
 	});
 	});
-
+	app.get('/setting', isLoggedIn, function(req,res){
+		var collection = req.db.collection('friendships');
+		collection.find({'requested':req.user._id, 'status':'Pending'},function(err, request){
+		res.render('editProfile.ejs',{
+				user:req.user,
+				requestStatus:request,
+		});
+		});
+	});
 	app.post('/createGroup', isLoggedIn, function(req,res,done){
 		Group.findOne({'name':req.body.name}, function(err, group){
 			if (group){
@@ -118,7 +122,6 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 
 	});
 	app.post('/lostfoundpost', type, isLoggedIn, function(req,res,done){
-		console.log(req.body);
 		var tmp_path = req.file.path;
 		var mimetype = req.file.mimetype.split("/");
 		var extension = mimetype[1];
@@ -158,7 +161,6 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 // it take user's id and query the record from database and update the path
 // for the user image
 app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
-	console.log(req.file);
 	var tmp_path = req.file.path;
 	var mimetype = req.file.mimetype.split("/");
 	var extension = mimetype[1];
@@ -183,10 +185,10 @@ app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
 	});
 });
 
+
 app.post('/saveDate', isLoggedIn, function(req, res, done){
 	var newSchedule = new Schedule();
 		newSchedule.text = req.body.cName;
-		console.log(req.body.cName);
 		newSchedule.start_date = req.body.sDate;
 		newSchedule.end_date = req.body.eDate;
 		var pre = new Date(req.body.sDate);
@@ -202,6 +204,28 @@ app.post('/saveDate', isLoggedIn, function(req, res, done){
 			}
 		});
 
+});
+var pdf=upload.single('pdf')
+app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
+	var tmp_path = req.file.path;
+	var mimetype = req.file.mimetype.split("/");
+	var extension = mimetype[1];
+	var name  = req.filename;
+	destination ='upload/profile/' + name+"."+extension;
+	var target_path = rootpath + '/public/'+destination;
+	var src = fs.createReadStream(tmp_path);
+	var dest = fs.createWriteStream(target_path);
+	src.pipe(dest);
+	src.on('end', function() {});
+	src.on('error', function(err) { console.log(err); });
+	User.findOne({'_id':req.user._id}, function(err, user){
+		user.resume = destination;
+		user.save(function(err){
+			if(err){
+				console.log(err);
+			}
+		});
+	});
 });
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this ( the isLoggedIn function)
@@ -219,6 +243,7 @@ app.post('/saveDate', isLoggedIn, function(req, res, done){
 							}
 							User.find({'_id':{$in:currentUser.friends}},function(err, friends){
 								Schedule.find({'text': 'dadsad' }, function(err, sched){
+									posts.reverse();
 								res.render('profile.ejs',{
 									postlist: posts,
 									user: req.user,
@@ -238,7 +263,6 @@ app.post('/saveDate', isLoggedIn, function(req, res, done){
 			app.get('/profile/:id', isLoggedIn, function(req,res){
 				var owner = req.params.id;
 				User.findOne({'local.email': owner}, function (err, sid){
-
 					var found = false;
 					if (sid.visibility == "friends"){
 						for ( j = 0; j < req.user.friends ; j++){
@@ -290,10 +314,10 @@ app.post('/saveDate', isLoggedIn, function(req, res, done){
 								});
 							}
 						});
+						allowed_posts.reverse();
 						var currentUser = req.user;
 						var collection = req.db.collection('friendships');
 						collection.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
-
 									User.find({'_id':{$in:sid.friends}},function(err, friends){
 										res.render('profile.ejs',{
 											postlist: allowed_posts,
@@ -326,7 +350,7 @@ app.post('/saveDate', isLoggedIn, function(req, res, done){
 				});
 				console.log(find);
 				res.render('pollview.ejs',{
-					user:req.user,
+					 user:req.user,
 					 pollist:polls,
 					 voted: find,
 				 });
@@ -417,17 +441,25 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 				res.render('profile-temp.ejs', {});
 					host = req.get('host');
 					link ="http://"+req.get('host')+"/verify?id="+req.user._id;
-					mailOptions ={
+					mailOptions = {
 						from:"multiculturalteam67@gmail.com",
 					    to :req.user.local.email,
-					    subject:"Please confirm your Email Account",
-					    html:"Hello, <br> Please Click on the link to verify your email. <br><a href ="+link+">Click here to verify</a>"
-					  }
+					    subject:"MUNSSN email confirmation--Please confirm your Email Account",
+					    html:"<head><link rel='stylesheet' href='https://www.w3schools.com/w3css/4/w3.css'></head>"+
+							"<body>"+
+							"<div class='w3-card w3-center'>"+
+							"Hello, <h3> Please Click on the link to verify your email.</h3>"+
+							"<br><a class='w3-button w3-red' href ="+link+">"+
+							"Click here to verify</a>"+
+							"</div>"+
+							"</body>",
+					  };
 					  console.log(mailOptions);
-					  smtpTransport.sendMail(mailOptions,function(error, resoonse){
+						console.log(smtpTransport);
+					  smtpTransport.sendMail(mailOptions,function(error, res){
 					    if (error){
 					      console.log(error);
-					    //   res.end("error");
+
 					    }else{
 					      console.log("Message sent: " + res.message);
 					        // res.end("sent");
@@ -461,7 +493,7 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 
 	// process the signup from
 	app.post('/signup', passport.authenticate('local-signup', {
-		successRedirect : '/profile', // redirect to the secure profile section
+		successRedirect : '/profile-temp', // redirect to the secure profile section
 		failureRedirect : '/', // redirect back to the signup page if there is an error
 		failureFlash: true // allow flash messages
 	}));

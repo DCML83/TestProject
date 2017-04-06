@@ -1,0 +1,127 @@
+<!doctype HTML5>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MUNSSN-Profile</title>
+<link href="../CSS/navCSS.css" rel="stylesheet" type="text/css">
+<link href="../CSS/eiCSS.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
+<script src="../JS/eiJS.js"></script>
+<script src="../JS/momentjs.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="../JS/dobPicker.min.js"></script>
+<script src="../JS/dateselector.js"></script>
+<script src="../JS/combodate.js"></script>
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
+</style>
+
+</head>
+<body>
+<!--Navbar -->
+<div class="w3-top w3-moblie">
+	<div class="w3-bar w3-text-white w3-left-align" id="nav_bar">
+		<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-16 w3-hover-text-grey w3-large " href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+		<a href="/profile" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-home "></i> MUNSSN</a>
+		<a href="/group" class="w3-bar-item w3-button w3-hide-small w3-hover-none w3-hover-text-grey w3-padding-16"><i class="fa fa-users fa-fw "></i> Group</a>
+		<a href="/friend" class="w3-bar-item w3-button  w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-user"></i> Friends</a>
+		<a href="/lostandfound" class="w3-bar-item w3-button w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-circle-o-notch fa-fw "></i> Lost and Found</a>
+		<a href="/coursepoll" class="w3-bar-item w3-button  w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-question-circle-o fa-fw "></i> Course Poll</a>
+		<a href="/chatroom" class="w3-bar-item w3-button w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-envelope w"></i> Chatroom</a>
+		<div class="w3-dropdown-hover  w3-large" style="margin-top:10px;background-color:maroon;">
+			<button class="w3-button w3-text-white">
+				<i class="fa fa-bell w3-large"></i>
+				<span class="w3-badge w3-right w3-medium w3-blue">
+					<%=requestStatus.length%>
+				</span>
+			</button>
+			<div class="w3-dropdown-content w3-bar-block w3-cards"  style="width:400px">
+				<!--display friend request as notification-->
+				<% requestStatus.forEach(function(user) {%>
+					<div class="w3-card w3-contianer">
+					<p>  <%=user.requester%> sending you a friend request</p>
+					<time id="then" datetime="<%= user.dateAccepted%>"></time>
+					<form action ="/acceptRequest" method = "post">
+						<input type="hidden" name="requester" value="<%=user.requester%>" </p>
+						<button type="submit" class="w3-green"> Accept Request </button>
+						<button type="submit" class="w3-red"> Deny Request </button>
+					</form>
+				</div>
+					<% }) %>
+				</div>
+			</div>
+		<div class="w3-right">
+				<div class="w3-dropdown-hover w3-red">
+					<button class="w3-button"><img src="../<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
+					<div class="w3-dropdown-content w3-bar-block w3-card-4">
+						<a href="/profile" class="w3-bar-item w3-button">profile</a>
+						<a href="/setting" class="w3-bar-item w3-button">Setting</a>
+						<a href="/logout" class="w3-bar-item w3-button">Logout</a>
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+<div id="navDemo" class=" w3-bar-block w3-hide w3-hide-large w3-text-white w3-hide-medium w3-large">
+	<a href="/profile" class="w3-bar-item w3-button w3-hover-none  w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-home w3-margin-right"></i>MUNSSN</a>
+	<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-users fa-fw w3-margin-right"></i>Group</a>
+	<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-user w3-margin-right"></i>Friends</a>
+	<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-circle-o-notch fa-fw w3-margin-right"></i>Lost and Found</a>
+	<a href="/coursepoll" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-question-circle-o fa-fw w3-margin-right"></i>Course Poll</a>
+	<a href="/chatroom" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-envelope w3-margin-right"></i>Chatroom</a>
+</div>
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+
+<div id="CurrentInfoBox"class='w3-card w3-third w3-mobile w3-text-white w3-margin-top w3-margin-right'>
+  <div class ='w3-card'>
+    <h2>Current Information</h2>
+  </div>
+    <h4>First Name: <%=user.name.first%></h4>
+    <h4>Last Name: <%=user.name.last%></h4>
+    <h4>Birthday: <%=user.birthday%></h4>
+</div>
+<div id="EditBox" class='w3-card w3-half w3-mobile  w3-margin-top w3-text-white w3-padding'>
+  <div class ='w3-card'>
+<h1>Update Profile</h1>
+</div>
+<div class ='w3-card'>
+<h4>Name</h4>
+<input type="text" placeholder="First Name" />
+<input type="text" placeholder="Last Name" />
+<button id="UpdateButton">Update</button>
+</div>
+<br>
+<div class ='w3-card'>
+<h4>Birthday</h4>
+
+<!-- These are the select elements we will target -->
+<select id="dobday" name="day"></select>
+<select id="dobmonth" name = "month"></select>
+<select id="dobyear" name = "year"></select>
+<button id="UpdateButton">Update</button>
+</div>
+<div class ='w3-card'>
+<h4>Password</h4>
+<input type="text" placeholder="New Password" />
+<input type="text" placeholder="Confirm New Password" />
+<button id="UpdateButton">Update</button>
+</div>
+<div class ='w3-card'>
+<h4>Current visibility : <span class="w3-red"><%=user.visibility%></span></h4>
+<select name='visibility'>
+<option value="firends">Friends</option>
+<option value="me">me</option>
+<option value="everyone">Everyone</option>
+ </select>
+<button id="UpdateButton">Update</button>
+</div>
+</div>
+</div>
+</body>
+</html>

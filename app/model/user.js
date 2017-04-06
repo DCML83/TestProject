@@ -10,7 +10,7 @@ var userSchema = mongoose.Schema({
 	local	: {
 		email: {type: String,unique: true,},
 		password: String,
-		active: {type:Boolean,default:true}},
+		active: {type:Boolean,default:false}},
 	name: {
 		first: { type: String},
 		last: { type: String}},
@@ -18,6 +18,7 @@ var userSchema = mongoose.Schema({
 	gender:String,
 	Major:String,
 	Year: String,
+	resume:String,
 	visibility:{type: String,default: 'everyone'},
 	image: {type: String,default: 'images/user.png'},
 	friends:[{type : ObjectId, ref: 'User' }],
