@@ -31,7 +31,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
     scheduler.config.readonly_form = true;
     scheduler.config.repeat_date = "%m/%d/%Y";
 	scheduler.config.include_end_by = true;
-    scheduler.init('scheduler_here',new Date(2017,3,4),"month");
+    scheduler.init('scheduler_here',new Date(),"week");
 
     scheduler.templates.xml_date = function(value){ return new Date(value); };
     scheduler.load("/data/<%=owner._id%>", "json");
@@ -207,8 +207,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 			 <!-- <img src="<%=post.image%>" style="width:100%" class="w3-margin-bottom"> -->
 			 <div id ="comment_area<%=index%>"  class='w3-card w3-white w3-margin'>
 				 <% post.comments.forEach(function(comments){%>
-					 <div class='w3-card-2 w3-white'>
-						 <p><%= comments.text%></p>
+					 <div class='w3-card-2 w3-white' style="width:100%">
+						 <p style="width:100%"><%= comments.text%></p>
 				 </div>
 				 <%})%>
 			 </div>
@@ -253,7 +253,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 					<br>
 					<br>
           <%}%>
-					<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:80%;'>
+					<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:80%;min-width:400px'>
 						<div class="dhx_cal_navline">
 							<div class="dhx_cal_prev_button">&nbsp;</div>
 							<div class="dhx_cal_next_button">&nbsp;</div>

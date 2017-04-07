@@ -1,13 +1,11 @@
 var User = require('../app/model/user').User;
 var db = require('../config/database.js');
-var ObjectId = require('mongoose').Types.ObjectId;
 var Post  = require('../app/model/posts').Post;
 var Group = require('../app/model/groups').Group;
 var lostFound = require('../app/model/lostFound').lostFound;
 var Poll= require('../app/model/poll').Poll;
 var Schedule = require('../app/model/schedule').Schedule;
 var Permissions = require('../app/model/permission').Permissions;
-
 var moment = require('moment');
 var multer = require('multer');
 var upload = multer({ dest:__dirname + '/public/upload/temp' });
@@ -18,6 +16,8 @@ var path = require('path');
 var friendsOfFriends = require('friends-of-friends');
 var rootpath = path.dirname(require.main.filename);
 var type = upload.single('picture');
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 module.exports = function(app, server, passport) {
 	var io = require('socket.io')(server);
 	var nodemailer = require("nodemailer");
@@ -208,23 +208,6 @@ app.post('/saveDate', isLoggedIn, function(req, res, done){
 		});
 
 });
-
-app.get('/data/:id', function(req, res){
-	//Schedule.find({owner: req.user._id}, function(error, thing){
-	var db = req.db;
-	var id = new ObjectId(req.params.id);
-	console.log(req.params.id);
-	var schedule = db.collection("schedules");
-	schedule.find({'owner': id}, function(err, data){
-        //set id property for all records
-        for (var i = 0; i < data.length; i++)
-            data[i].id = data[i]._id;
-
-        //output response
-        res.send(data);
-	//	});
-    });
-});
 var pdf=upload.single('pdf')
 app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 	var tmp_path = req.file.path;
@@ -262,7 +245,6 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 									suggested = users});
 							}
 							User.find({'_id':{$in:currentUser.friends}},function(err, friends){
-<<<<<<< HEAD
 								for (var i =0; i<suggested.length; i++){
 									if (include(suggested[i],friends)){
 											remove(suggested, suggested[i]);
@@ -271,8 +253,6 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 								}
 
 								Schedule.find({'text': 'dadsad' }, function(err, sched){
-=======
->>>>>>> 0c9243a7445ff1c86545e590bfe9c85d3d8c1d11
 									posts.reverse();
 								res.render('profile.ejs',{
 									postlist: posts,
@@ -281,14 +261,30 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 									friends: friends,
 									requestStatus: request,
 									suggestedFriends: suggested,
+									sendSched: sched,
 								});
 							});
 						});
 					});
 				});
 			});
-		
+		});
+app.get('/data/:id', function(req, res){
+	//Schedule.find({owner: req.user._id}, function(error, thing){
+	var db = req.db;
+	var id = new ObjectId(req.params.id);
+	console.log(req.params.id);
+	var schedule = db.collection("schedules");
+	schedule.find({'owner': id}, function(err, data){
+        //set id property for all records
+        for (var i = 0; i < data.length; i++)
+            data[i].id = data[i]._id;
 
+        //output response
+        res.send(data);
+	//	});
+    });
+});
 			app.get('/profile/:id', isLoggedIn, function(req,res){
 				var owner = req.params.id;
 				User.findOne({'local.email': owner}, function (err, sid){
@@ -316,14 +312,6 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 						Post.find({postto: sid}).populate('postby').exec(function(err, posts){
 						var allowed_posts = [];
 						posts.forEach(function(post){
-							console.log('everyone'+compareString(post.visibility,"everyone"));
-							console.log('friends'+compareString(post.visibility,"friends"));
-							console.log('me'+compareString(post.visibility,"me"));
-							console.log('specific'+compareString(post.visibility,"specific"));
-
-
-
-
 							if (compareString(post.visibility,"me")){
 								if (compareString(post.postto,req.user._id)){
 										allowed_posts.push(post);
@@ -452,7 +440,6 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 		currentUserId.denyRequest(friendToDeny, function (err, denied) {
 			res.redirect(req.get('referer'));
 		    console.log('denied', denied);
-		    // denied 1
 		});
 	});
 
