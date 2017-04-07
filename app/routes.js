@@ -5,6 +5,8 @@ var Group = require('../app/model/groups').Group;
 var lostFound = require('../app/model/lostFound').lostFound;
 var Poll= require('../app/model/poll').Poll;
 var Schedule = require('../app/model/schedule').Schedule;
+var Permissions = require('../app/model/permission').Permissions;
+
 var moment = require('moment');
 var multer = require('multer');
 var upload = multer({ dest:__dirname + '/public/upload/temp' });
@@ -210,7 +212,7 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 	var tmp_path = req.file.path;
 	var mimetype = req.file.mimetype.split("/");
 	var extension = mimetype[1];
-	var name  = req.filename;
+	var name  = md5(req.file.orignalname);
 	destination ='upload/profile/' + name+"."+extension;
 	var target_path = rootpath + '/public/'+destination;
 	var src = fs.createReadStream(tmp_path);
@@ -234,14 +236,21 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 		Post.find({postto: currentUser._id}).populate('postby').exec(function(err, posts){
 				var col = req.db.collection('friendships');
 				col.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
-						console.log(request);
 						var suggested =[];
 						currentUser.getFriendsOfFriends(function(err, fof){
 							var suggested = fof;
 							if(fof.length == 0){
-					 			User.find({'Major':currentUser.Major},function(err, users){suggested = users});
+					 			User.find({$and:[{'Major':currentUser.Major},{'_id':{$ne:currentUser._id}}]},function(err, users){
+									suggested = users});
 							}
 							User.find({'_id':{$in:currentUser.friends}},function(err, friends){
+								for (var i =0; i<suggested.length; i++){
+									if (include(suggested[i],friends)){
+											remove(suggested, suggested[i]);
+									}
+										console.log(suggested);
+								}
+
 								Schedule.find({'text': 'dadsad' }, function(err, sched){
 									posts.reverse();
 								res.render('profile.ejs',{
@@ -263,57 +272,68 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 			app.get('/profile/:id', isLoggedIn, function(req,res){
 				var owner = req.params.id;
 				User.findOne({'local.email': owner}, function (err, sid){
-					var found = false;
-					if (sid.visibility == "friends"){
-						for ( j = 0; j < req.user.friends ; j++){
-							if(req.user.friends[j] == sid._id){
-								found = true;
-								break
-							}
-						}
-					}
-
-					else if (sid.visibility == "me"){
-						if (req.user == sid){
-							found = true;
-						}
-					}
-
-					else if ( sid.visibility = "everyone"){
-						found = true;
-					}
-
-					if (found){
+					// var found = false;
+					// if (sid.visibility == "friends"){
+					// 	for ( j = 0; j < req.user.friends ; j++){
+					// 		if(req.user.friends[j] == sid._id){
+					// 			found = true;
+					// 			break
+					// 		}
+					// 	}
+					// }
+					//
+					// else if (sid.visibility == "me"){
+					// 	if (req.user == sid){
+					// 		found = true;
+					// 	}
+					// }
+					//
+					// else if ( sid.visibility = "everyone"){
+					// 	found = true;
+					// }
+					//
+					// if (found){
 						Post.find({postto: sid}).populate('postby').exec(function(err, posts){
 						var allowed_posts = [];
 						posts.forEach(function(post){
-							if (post.visibility == "me"){
-								if (post.postto == req.user){
+							console.log('everyone'+compareString(post.visibility,"everyone"));
+							console.log('friends'+compareString(post.visibility,"friends"));
+							console.log('me'+compareString(post.visibility,"me"));
+							console.log('specific'+compareString(post.visibility,"specific"));
+
+
+
+
+							if (compareString(post.visibility,"me")){
+								if (compareString(post.postto,req.user._id)){
 										allowed_posts.push(post);
 								}
-
 							}
-							else if (post.visibility == "everyone"){
+							else if (compareString(post.visibility,"everyone")){
+								console.log(compareString(post.visibility,"everyone"));
 								allowed_posts.push(post);
 							}
-							else if (post.visibility == "friends"){
-								for (j = 0; j < req.user.friends ; j++){
-									if(req.user.friends[j] == post.postto){
+							else if (compareString(post.visibility,"friends")){
+								console.log(compareString(post.visibility,"friends"));
+								req.user.friends.forEach(function(f){
+									if(compareString(f,post.postto)){
 										allowed_posts.push(post);
 									}
-								}
+								});
 							}
-							else if (post.visibility == "specific"){
-								permission.findOne({'postId': docs._id}, function(err,poster){
+							else if (compareString(post.visibility, "specific")){
+								Permissions.findOne({'postid': post._id}, function(err,poster){
 									var allowed = poster.permissionableUser;
 									allowed.forEach(function(person){
-										if (req.user == person){
+										if (compareString(req.user._id,person)){
 											allowed_posts.push(post);
 										}
 									});
 								});
 							}
 						});
+						console.log(posts)
+						console.log(allowed_posts);
 						allowed_posts.reverse();
 						var currentUser = req.user;
 						var collection = req.db.collection('friendships');
@@ -331,7 +351,7 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 
 						});
 });
-				}
+				// }
 
 			});
 });
@@ -383,12 +403,13 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 
 	});
 	app.post('/post', isLoggedIn, function(req,res, done){
+
 		User.findOne({'local.email':req.body.email}, function(err, u){
-		newPost(req.user._id, u._id, req.body.message,req.body.visibility,req,res);
+		newPost(u,req,res);
 	});
 });
 app.post('/gpost', isLoggedIn, function(req,res, done){
-	newPost(req.user._id, req.body.group_id, req.body.message,"everyone",req,res);
+	newPost(req,res);
 });
 
 	app.post('/requestFriend', isLoggedIn, function(req, res){
@@ -570,15 +591,28 @@ function generateHash(str) {
 	return bcrypt.hashSync(str, bcrypt.genSaltSync(8), null);
 }
 
-function newPost(id, tid, m, v, req, res){
+function newPost(u,req, res){
 	var newPost = new Post();
-	newPost.postby = id;
-	newPost.postto = tid
-	newPost.body = m;
+	newPost.postby = req.user.id;
+	newPost.postto = u;
+	newPost.body = req.body.message;
 	newPost.date = moment().format();
-	newPost.visibility = v;
+	newPost.visibility = req.body.visibility;
+
 	newPost.save(function(error) {
 		if (!error) {
+			n = new String(newPost.visibility).localeCompare(new String('specific'));
+			if (n == 0){
+				var newPermission = new Permissions();
+				newPermission.postid = newPost._id;
+				var friends= req.body.friendlist.split("|");
+				console.log(friends);
+				friends.forEach(function(f){
+					if (f ==''){return;}
+					newPermission.permissionableUser.push(f);
+				});
+				newPermission.save(function(err){if(err){console.log(err)}});
+			}
 		res.redirect(req.get('referer'));
 			//  return done(null, newPost);
 		 }
@@ -595,12 +629,23 @@ function picture_upload(destination){
 function include(e, array){
 	var find = false;
 	array.forEach(function(a){
-		var n = new String(e).localeCompare(new String(a));
-		console.log(n);
-		if(n ==0){
+		if(compareString(a,e)){
 			find = true;
 			return;
 		}
 	});
 	return find;
+}
+function remove(array, element) {
+    const index = array.indexOf(element);
+    array.splice(index, 1);
+}
+
+function compareString(a,b){
+	var n = new String(a).localeCompare(new String(b));
+	if (n==0){
+		return true;}
+	return false
+
+
 }

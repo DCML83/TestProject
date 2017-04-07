@@ -128,7 +128,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 			<p><i class="fa fa-graduation-cap" ></i>Major in <%= owner.Major%></P>
 			<p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i>Birthday <%= owner.birthday%> </p>
       <% if(owner._id != user._id){%>
-      <form action="/requestFriend" method="post">
+      <form id ='addfriends' action="/requestFriend" method="post">
       <input type ='hidden' name='email' value='<%=owner.local.email%>'/>
       <button type="submit"> Add Friend </button>
       </form>
@@ -189,7 +189,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 			</div>
 			</div>
 					</div>
-					<input type="hidden" value="" id="friendlist">
+					<input type="hidden" value="" id="friendlist" name='friendlist'>
 					<button class="post w3-button w3-white" type="submit"><i class="fa fa-pencil"></i> Post</button>
 					</form>
 				</div>
@@ -334,13 +334,19 @@ $(document).ready(function(){
   $('#resume').hide();
   $('#posting').hide();
   $('#scheduler_here').hide()
+  console.log($('#resume').attr('src') )
   if ('<%=owner._id%>'== '<%=user._id%>'){
       $('#resume').show();
       $('#scheduler_here').show();
     }
       else if (findUser()) {
+        if($('#resume').attr('src') != '../noresume'){
         $('#resume').show();
+
+        }
         $('#scheduler_here').show();
+        $('#addfriends').hide();
+
       }
   if('<%=owner.visibility%>' =='everyone'){
     $('#posting').show();

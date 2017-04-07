@@ -18,11 +18,12 @@ $('#setfriends').click(function(event){
   $('#friendlist').val("");
 $("input[name='options[]']:checked").each(function ()
 {
-    checked += $(this).val()+ " ";
+    checked += $(this).val()+ "|";
 });
 $('#id01').css("display","none");
 $('#friendlist').val(function(n, c){
             return c + checked;});
+console.log($('#friendlist').val());
 });
 
 $('#myBtn').click(function(event){

@@ -18,7 +18,7 @@ var userSchema = mongoose.Schema({
 	gender:String,
 	Major:String,
 	Year: String,
-	resume:String,
+	resume:{type:String, default:'noresume'},
 	visibility:{type: String,default: 'everyone'},
 	image: {type: String,default: 'images/user.png'},
 	friends:[{type : ObjectId, ref: 'User' }],
