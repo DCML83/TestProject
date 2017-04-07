@@ -239,21 +239,17 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 				col.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
 						var suggested =[];
 						currentUser.getFriendsOfFriends(function(err, fof){
-							var suggested = fof;
-							if(fof.length == 0){
-					 			User.find({$and:[{'Major':currentUser.Major},{'_id':{$ne:currentUser._id}}]},function(err, users){
-									suggested = users});
-							}
+							
+							User.find({$and:[{'Major':currentUser.Major},{'_id':{$ne:currentUser._id}}]},function(err, users){
+								users.forEach(function(user){
+									if (include(user._id,currentUser.friends)){return;}
+										suggested.push(user);
+									});
+							});
+							suggested = suggested.concat(fof);
 							User.find({'_id':{$in:currentUser.friends}},function(err, friends){
-								for (var i =0; i<suggested.length; i++){
-									if (include(suggested[i],friends)){
-											remove(suggested, suggested[i]);
-									}
-										console.log(suggested);
-								}
-
-								Schedule.find({'text': 'dadsad' }, function(err, sched){
-									posts.reverse();
+								console.log(suggested);
+								posts.reverse();
 								res.render('profile.ejs',{
 									postlist: posts,
 									user: req.user,
@@ -261,54 +257,30 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 									friends: friends,
 									requestStatus: request,
 									suggestedFriends: suggested,
-									sendSched: sched,
 								});
 							});
 						});
-					});
 				});
 			});
 		});
-app.get('/data/:id', function(req, res){
-	//Schedule.find({owner: req.user._id}, function(error, thing){
-	var db = req.db;
-	var id = new ObjectId(req.params.id);
-	console.log(req.params.id);
-	var schedule = db.collection("schedules");
-	schedule.find({'owner': id}, function(err, data){
+	app.get('/data/:id', function(req, res){
+		//Schedule.find({owner: req.user._id}, function(error, thing){
+		var db = req.db;
+		var id = new ObjectId(req.params.id);
+		console.log(req.params.id);
+		var schedule = db.collection("schedules");
+		schedule.find({'owner': id}, function(err, data){
         //set id property for all records
-        for (var i = 0; i < data.length; i++)
+       		for (var i = 0; i < data.length; i++)
             data[i].id = data[i]._id;
 
         //output response
-        res.send(data);
-	//	});
-    });
-});
+        	res.send(data);
+    	});
+	});
 			app.get('/profile/:id', isLoggedIn, function(req,res){
 				var owner = req.params.id;
 				User.findOne({'local.email': owner}, function (err, sid){
-					// var found = false;
-					// if (sid.visibility == "friends"){
-					// 	for ( j = 0; j < req.user.friends ; j++){
-					// 		if(req.user.friends[j] == sid._id){
-					// 			found = true;
-					// 			break
-					// 		}
-					// 	}
-					// }
-					//
-					// else if (sid.visibility == "me"){
-					// 	if (req.user == sid){
-					// 		found = true;
-					// 	}
-					// }
-					//
-					// else if ( sid.visibility = "everyone"){
-					// 	found = true;
-					// }
-					//
-					// if (found){
 						Post.find({postto: sid}).populate('postby').exec(function(err, posts){
 						var allowed_posts = [];
 						posts.forEach(function(post){
@@ -340,8 +312,6 @@ app.get('/data/:id', function(req, res){
 								});
 							}
 						});
-						console.log(posts)
-						console.log(allowed_posts);
 						allowed_posts.reverse();
 						var currentUser = req.user;
 						var collection = req.db.collection('friendships');
@@ -356,13 +326,10 @@ app.get('/data/:id', function(req, res){
 
 										});
 									});
-
+								});
+							});
 						});
-});
-				// }
-
-			});
-});
+					});
 
 
 	// logout
@@ -383,8 +350,7 @@ app.get('/data/:id', function(req, res){
 					 voted: find,
 				 });
 			});
-
-	});
+		});
 
 
 
@@ -407,28 +373,25 @@ app.get('/data/:id', function(req, res){
 			 else {
 			 	res.redirect(req.get("referer"));
 			 }
-		 })
-
-	});
+			});
+		});
 	app.post('/post', isLoggedIn, function(req,res, done){
-
 		User.findOne({'local.email':req.body.email}, function(err, u){
-		newPost(u,req,res);
+			newPost(u,req,res);
+		});
 	});
-});
-app.post('/gpost', isLoggedIn, function(req,res, done){
-	newPost(req,res);
-});
+	app.post('/gpost', isLoggedIn, function(req,res, done){
+		newPost(req,res);
+	});
 
 	app.post('/requestFriend', isLoggedIn, function(req, res){
 		User.findOne({'local.email':req.body.email}, function(err, u) {
-			if(err) {console.log(err);}else{
+			if(err) {console.log(err);}
+			else{
 			var friendToRequest = u._id;
 			var currentUserId = req.user;
 			currentUserId.friendRequest(friendToRequest, function (err, request) {
-	        console.log('request', request);
 			    res.redirect(req.get('referer'));
-
 			});
 			}
 		});
@@ -439,7 +402,6 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 		var currentUserId = req.user;
 		currentUserId.denyRequest(friendToDeny, function (err, denied) {
 			res.redirect(req.get('referer'));
-		    console.log('denied', denied);
 		});
 	});
 
@@ -455,7 +417,6 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 			user.friends.push(friendToAdd);
 			user.save();
 		});
-           console.log('friendship', friendship);
 		    res.redirect(req.get('referer'));
 
 			});
@@ -482,15 +443,12 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 							"</div>"+
 							"</body>",
 					  };
-					  console.log(mailOptions);
-						console.log(smtpTransport);
 					  smtpTransport.sendMail(mailOptions,function(error, res){
 					    if (error){
 					      console.log(error);
 
 					    }else{
 					      console.log("Message sent: " + res.message);
-					        // res.end("sent");
 					    }
 					  });
 					}
@@ -498,10 +456,7 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 
 
 	app.get('/verify',function(req,res,done){
-	console.log(req.protocol+":/"+req.get('host'));
-    console.log("Domain is matched. Information is from Authentic email");
     	User.findById(req.query.id, function(err, user) {
-
 			 if(err){
 				 console.log(err)
 				res.end("<h1>Request is from unknown source");
@@ -510,14 +465,13 @@ app.post('/gpost', isLoggedIn, function(req,res, done){
 			user.local.active = true
 			console.log("<h1>Email "+user.local.email+" is been Successfully verified");
 			user.save(function(err) {
-                    if (err)
-                        throw err;
+                if (err)
+                    throw err;
                     return done(null, user);
                 });
 			res.render('index.ejs', {});
         });
-
-});
+	});
 
 	// process the signup from
 	app.post('/signup', passport.authenticate('local-signup', {
@@ -652,7 +606,4 @@ function compareString(a,b){
 	var n = new String(a).localeCompare(new String(b));
 	if (n==0){
 		return true;}
-	return false
-
-
-}
+	return false;}
