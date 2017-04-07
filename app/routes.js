@@ -262,7 +262,6 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 									suggested = users});
 							}
 							User.find({'_id':{$in:currentUser.friends}},function(err, friends){
-<<<<<<< HEAD
 								for (var i =0; i<suggested.length; i++){
 									if (include(suggested[i],friends)){
 											remove(suggested, suggested[i]);
@@ -271,8 +270,6 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 								}
 
 								Schedule.find({'text': 'dadsad' }, function(err, sched){
-=======
->>>>>>> 0c9243a7445ff1c86545e590bfe9c85d3d8c1d11
 									posts.reverse();
 								res.render('profile.ejs',{
 									postlist: posts,
