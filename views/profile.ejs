@@ -34,7 +34,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
     scheduler.init('scheduler_here',new Date(2017,3,4),"month");
 
     scheduler.templates.xml_date = function(value){ return new Date(value); };
-    scheduler.load("/data", "json");
+    scheduler.load("/data/<%=owner._id%>", "json");
     }
 </script>
 </head>
@@ -320,7 +320,8 @@ $(function(){
 
 	 });
 });
-
+</script>
+<script>
 function findUser(){
   <% for (var i = 0; i <  owner.friends.length; i++){ %>
     if('<%=owner.friends[i]%>' == '<%=user._id%>'){

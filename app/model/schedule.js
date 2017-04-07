@@ -15,7 +15,7 @@ var scheduleSchema = mongoose.Schema({
 	text: String,
 	rec_type: String,
 	event_length: String,
-	owner: [{type: ObjectId, ref: 'User'}],
+	owner: {type: ObjectId, ref: 'User'},
 });
 
 
