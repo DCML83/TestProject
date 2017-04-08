@@ -179,6 +179,74 @@ app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
 	});
 });
 
+app.post('/updateName', isLoggedIn,function(req, res){
+	var currentUser = req.user._id; 
+	var newName = req.body.fName;
+	var newLname = req.body.lName;
+	console.log(newLname);
+	 User.findByIdAndUpdate(req.user._id,
+		        {$set: {'name.first': newName,
+		        	'name.last': newLname}},
+		        
+		        //{new: true},
+		        function(err,user){
+		            if(err){
+		                res.send({error :err}) ; 
+		            } else{
+		            	res.redirect(req.get('referer')); ; 
+		            }
+		        });
+});
+
+app.post('/updateBirthday', isLoggedIn,function(req, res){
+	var currentUser = req.user._id; 
+	var newDate = moment().format();
+	var bday = new Date(req.body.year, req.body.month, req.body.day);
+	console.log(newDate);
+	 User.findByIdAndUpdate(req.user._id,
+		        {$set: {'birthday': bday}},
+		        
+		        //{new: true},
+		        function(err,user){
+		            if(err){
+		                res.send({error :err}) ; 
+		            } else{
+		            	res.redirect(req.get('referer')); 
+		            }
+		        });
+});
+
+app.post('/updatePassword', isLoggedIn,function(req, res){
+	var currentUser = req.user._id;
+	var password = req.body.password;
+	 User.findByIdAndUpdate(req.user._id,
+		        {$set: {'local.password': generateHash(password)}},
+		        
+		        //{new: true},
+		        function(err,user){
+		            if(err){
+		                res.send({error :err}) ; 
+		            } else{
+		            	res.redirect(req.get('referer'));  
+		            }
+		        });
+});
+
+app.post('/updateVisibility', isLoggedIn,function(req, res){
+	var currentUser = req.user._id; 
+	var newVisibility = req.body.visibility;
+	 User.findByIdAndUpdate(req.user._id,
+		        {$set: {'visibility': newVisibility}},
+		        
+		        //{new: true},
+		        function(err,user){
+		            if(err){
+		                res.send({error :err}) ; 
+		            } else{
+		            	res.redirect(req.get('referer'));  
+		            }
+		        });
+});
 
 app.post('/saveDate', isLoggedIn, function(req, res, done){
 	var newSchedule = new Schedule();

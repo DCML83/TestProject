@@ -92,34 +92,42 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 </div>
 <div class ='w3-card'>
 <h4>Name</h4>
-<input type="text" placeholder="First Name" />
-<input type="text" placeholder="Last Name" />
-<button id="UpdateButton">Update</button>
+<form action="/updateName" method="post">
+<input type="text" name="fName" placeholder="First Name" />
+<input type="text" name="lName" placeholder="Last Name" />
+<button type="submit">Update</button>
+</form>
 </div>
 <br>
 <div class ='w3-card'>
 <h4>Birthday</h4>
+<form action="/updateBirthday" method="post">
 
 <!-- These are the select elements we will target -->
 <select id="dobday" name="day"></select>
 <select id="dobmonth" name = "month"></select>
 <select id="dobyear" name = "year"></select>
-<button id="UpdateButton">Update</button>
+<button type="submit">Update</button>
+</form>
 </div>
 <div class ='w3-card'>
 <h4>Password</h4>
-<input type="text" placeholder="New Password" />
-<input type="text" placeholder="Confirm New Password" />
-<button id="UpdateButton">Update</button>
+<form action="/updatePassword" method="post">
+<input type="text" name = nPass placeholder="New Password" />
+<input type="text" name = nPass placeholder="Confirm New Password" />
+<button type="submit">Update</button>
+</form>
 </div>
 <div class ='w3-card'>
+<form action="/updateVisibility" method="post">
 <h4>Current visibility : <span class="w3-red"><%=user.visibility%></span></h4>
 <select name='visibility'>
 <option value="firends">Friends</option>
 <option value="me">me</option>
 <option value="everyone">Everyone</option>
  </select>
-<button id="UpdateButton">Update</button>
+<button type="submit">Update</button>
+</form>
 </div>
 </div>
 </div>
