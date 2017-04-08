@@ -23,6 +23,7 @@ var userSchema = mongoose.Schema({
 	image: {type: String,default: 'images/user.png'},
 	friends:[{type : ObjectId, ref: 'User' }],
 	group:[{type : ObjectId, ref: 'Group' }],
+	course:[{type:ObjectId,ref:'Schedule'}],
 });
 
 
@@ -49,5 +50,4 @@ userSchema.methods.validPassword = function(password){
 // create the model for users and expose it to the app
 
 var User = mongoose.model(options.personModelName, userSchema);
-
 module.exports = {User: User};

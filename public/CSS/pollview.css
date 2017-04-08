@@ -1,0 +1,15 @@
+#create{
+	/*position: relative;
+	left: 2%;*/
+	background-color: darkred;
+	color: white;
+	padding: 5px;
+	padding-left: 5px;
+	border-radius: 5px;
+}
+#bodyview{
+	border: 1px solid grey;
+	border-radius: 5px;
+	padding:5px;
+	/*position: relative;*/
+}

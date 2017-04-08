@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <title>MUNSSN-Course Polling</title>
 <link href="CSS/navCSS.css" rel="stylesheet" type="text/css">
+<link href="CSS/pollview.css" rel="stylesheet" type="text/css">
 <link href="CSS/eiCSS.css" rel="stylesheet" type="text/css">
+
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -17,52 +19,90 @@
 
 </head>
 <body>
-<!-- <div id="banner">
-	<h2>Test Information</h2>
-	<p>some nonsense I guess</p>
-</div> -->
-<div class="w3-bar w3-border  w3-text-white w3-collaspe " id="nav_bar">
-	<a href="/profile" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">MUNSSN</a>
-	<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hover-text-grey w3-padding-16">Group</a>
-	<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Friends</a>
-	<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Lost and Found</a>
-	<a href="/chatroom" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">chatroom</a>
-	<div class="w3-dropdown-hover w3-right">
-<button class="w3-button w3-hover-none w3-hover-text-grey"><img src="<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
-<div class="w3-dropdown-content w3-bar-block w3-cards">
-	<a href="/profile" class="w3-bar-item w3-button">profile</a>
-	<a href="#" class="w3-bar-item w3-button">Setting</a>
-	<a href="/logout" class="w3-bar-item w3-button">Logout</a>
-</div>
-</div>
-</div>
-<div>
-
-  <h1> poll view is here</h1>
-  <form method="post" action="/createpoll" >
-    <input  type='text' name='course' value=''>
-    <textarea name='description' value='' placeholder="Enter the question here"></textarea>
+	<div class="w3-top w3-moblie">
+		<div class="w3-bar w3-text-white w3-left-align" id="nav_bar">
+			<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-16 w3-hover-text-grey w3-large " href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+			<a href="/profile" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-home "></i> MUNSSN</a>
+			<a href="/group" class="w3-bar-item w3-button w3-hide-small w3-hover-none w3-hover-text-grey w3-padding-16"><i class="fa fa-users fa-fw "></i> Group</a>
+			<a href="/friend" class="w3-bar-item w3-button  w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-user"></i> Friends</a>
+			<a href="/lostandfound" class="w3-bar-item w3-button w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-circle-o-notch fa-fw "></i> Lost and Found</a>
+			<a href="/coursepoll" class="w3-bar-item w3-button  w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-question-circle-o fa-fw "></i> Course Poll</a>
+			<a href="/chatroom" class="w3-bar-item w3-button w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-envelope w"></i> Chatroom</a>
+			<div class="w3-dropdown-hover  w3-large" style="margin-top:10px;background-color:maroon;">
+				<button class="w3-button w3-text-white">
+					<i class="fa fa-bell w3-large"></i>
+					<span class="w3-badge w3-right w3-medium w3-blue">
+						<%=requestStatus.length%>
+					</span>
+				</button>
+				<div class="w3-dropdown-content w3-bar-block w3-cards"  style="width:400px">
+					<!--display friend request as notification-->
+					<% requestStatus.forEach(function(user) {%>
+						<div class="w3-card w3-contianer">
+						<p>  <%=user.requester.name.first%> <%=user.requester.name.last%> sending you a friend request</p>
+						<time id="then" datetime="<%= user.dateAccepted%>"></time>
+						<form action ="/acceptRequest" method = "post">
+							<input type="hidden" name="requester" value="<%=user.requester%>" </p>
+							<button type="submit" class="w3-green"> Accept Request </button>
+							<button type="submit" class="w3-red"> Deny Request </button>
+						</form>
+					</div>
+						<% }) %>
+					</div>
+				</div>
+			<div class="w3-right">
+					<div class="w3-dropdown-hover w3-red">
+						<button class="w3-button"><img src="../<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
+						<div class="w3-dropdown-content w3-bar-block w3-card-4">
+							<a href="/profile" class="w3-bar-item w3-button">profile</a>
+							<a href="/setting" class="w3-bar-item w3-button">Setting</a>
+							<a href="/logout" class="w3-bar-item w3-button">Logout</a>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+	<div id="navDemo" class=" w3-bar-block w3-hide w3-hide-large w3-text-white w3-hide-medium w3-large">
+		<a href="/profile" class="w3-bar-item w3-button w3-hover-none  w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-home w3-margin-right"></i>MUNSSN</a>
+		<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-users fa-fw w3-margin-right"></i>Group</a>
+		<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-user w3-margin-right"></i>Friends</a>
+		<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-circle-o-notch fa-fw w3-margin-right"></i>Lost and Found</a>
+		<a href="/coursepoll" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-question-circle-o fa-fw w3-margin-right"></i>Course Poll</a>
+		<a href="/chatroom" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-envelope w3-margin-right"></i>Chatroom</a>
+	</div>
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+	<div id = "create" class='w3-third w3-moblie w3-margin'>
+	<form method="post" action="/createpoll" >
+    Courses: <select name='course'>
+			<option value=''>Select Course</option>
+			<%course.forEach(function(c){%>
+				<option value='<%=c._id%>'><%=c.text%></option>
+		<%})%>
+	</select><br>
+    <textarea name='description' value='' placeholder="Enter the question here" style="width:100%"></textarea>
     <input type ='hidden' name="options_value" id="options_value" value="">
     <div id ='options'>
       Option <input type ='text' name="question" value=''><br>
     </div>
-     <p class='w3-button w3-grey' id='addquestion'>+</p><br>
+     <p class='w3-button w3-grey' id='addquestion'>+</p><br><br>
      <button type='submit' id="create_options">Create</button>
 
   </form>
 </div>
 
-<div id = 'bodyview'>
+<div class='w3-margin w3-col m7 w3-right'>
+<div id ='bodyview' >
  <input type ="hidden" value ="<%= pollist.length%>" id='length'/>
   <% pollist.forEach(function(poll, index){%>
+		<div class='w3-container w3-card-2 w3-white w3-round w3-margin'>
     <img src='<%=poll.postby.image%>' width="50" height="50"/>
-    <span> <%=poll.postby.name.first%> <%=poll.postby.name.last%></span>  <br>  <time id="then" datetime="<%= poll.date%>"></time><br>
+    <span> <%=poll.postby.name.first%> <%=poll.postby.name.last%> </span><br>
+		<time id="then" class="w3-right w3-opacity" datetime="<%= poll.date%>"></time>
+		<span><%=poll.course.text%></span>
 
     <h3><%=poll.body%></h3>
-    <h4><%=poll.course%></h4>
-				<p>Total Vote<%=poll.__v%></p>
+				<p>Total Vote: <%=poll.__v%></p>
 			<div id='option_area<%=index%>'>
-
     <% poll.options.forEach(function(p){%>
 			<% if(voted[index]){ %>
 				<script>
@@ -76,10 +116,12 @@
 				<input type="radio" name="options[]" value="<%=p._id%>"><%=p.text%><br>
 				<%}%>
 		<%})%>
-	</div>
+		</div>
 
       <button type="submit" value="<%=poll._id%>" id='vote<%=index%>' alt="<%=index%>">Vote</button><br>
+			</div>
 <%  }) %>
+</div>
 </div>
 <script>
 

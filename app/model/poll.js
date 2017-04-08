@@ -15,7 +15,7 @@ var polls = mongoose.Schema({
 	postby: {type: ObjectId, ref: 'User'},
 	body: String,
 	date: Date,
-  course: String,
+  course: {type:ObjectId,ref:'Schedule'},
 	voter:[{type: ObjectId, ref: 'User'}],
 	options:[{
     text: String,

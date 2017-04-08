@@ -30,9 +30,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
     function init() {
     scheduler.config.readonly_form = true;
     scheduler.config.repeat_date = "%m/%d/%Y";
-	scheduler.config.include_end_by = true;
+	  scheduler.config.include_end_by = true;
     scheduler.init('scheduler_here',new Date(),"week");
-
     scheduler.templates.xml_date = function(value){ return new Date(value); };
     scheduler.load("/data/<%=owner._id%>", "json");
     }
@@ -60,7 +59,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 				<!--display friend request as notification-->
 				<% requestStatus.forEach(function(user) {%>
 					<div class="w3-card w3-contianer">
-					<p>  <%=user.requester%> sending you a friend request</p>
+					<p>  <%=user.requester.name.first%> <%=user.requester.name.last%> sending you a friend request</p>
 					<time id="then" datetime="<%= user.dateAccepted%>"></time>
 					<form action ="/acceptRequest" method = "post">
 						<input type="hidden" name="requester" value="<%=user.requester%>" </p>
@@ -93,7 +92,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 </div>
 
 <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-	<div id = "profLeft" class =" w3-moblie w3-center w3-third">
+	<div id = "profLeft" class =" w3-moblie w3-center w3-quarter">
 		<div class="w3-card">
 			<div class="w3-card-2 w3-red">
 				<h1> My Info</h1></div>
@@ -138,24 +137,27 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 
 	<div class="w3-contianer w3-card-3 w3-blue">
 	<% if(owner._id == user._id){%>
-		<h1> suggested Friends</h1>
+		<h4 class='w3-text-black'> <b>suggested Friends<b></h4>
 		<% suggestedFriends.forEach(function(friend) {%>
 		<form action="/requestFriend" method="post">
-				<h3><%=friend.name.first %> <%=friend.name.last%></h3>
+      <a href='/profile/<%=friend.local.email%>'><%=friend.name.first %> <%=friend.name.last%></a><br>
 		<input type ='hidden' name='email' value='<%=friend.local.email%>'/>
 		<button type="submit"> Add Friend </button>
 		</form>
 		<% }) %>
 		<% } %>
-		<h1>My Friends</h1>
+		<h4 class='w3-text-black'> <b>Friends<b></h4>
 		<% friends.forEach(function(friend) {%>
-			<h3><%=friend.name.first %> <%=friend.name.last%></h3>
+      <div clas='w3-contianer w3-card w3-blue ' style='height:30px'>
+				 <img src="../<%=friend.image%>" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:20px;left:25px;">
+         <a href='/profile/<%=friend.local.email%>'><%=friend.name.first %> <%=friend.name.last%></a>
+       </div>
 		<% }) %>
 		</div>
 			</div>
 		</div>
 
-	<div id = "profRight" class =" w3-moblie w3-margin-top w3-col m8">
+	<div  class =" w3-moblie w3-margin-top w3-col m9">
 
 		<div id = "tab">
 			<button class="tablink" onclick="openTab(event, 'Timeline')" id="defaultLoad"><i class="fa fa-newspaper-o"></i> Timeline</button>
@@ -185,10 +187,10 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 											<input type="checkbox" name="options[]" value="<%=friend._id%>" /><%=friend.name.first %> <%=friend.name.last%><br>
 										<% }) %>
 										<br>
-				<p class="w3-button w3-grey" id="setfriends">set</p>
-			</div>
-			</div>
-					</div>
+								<p class="w3-button w3-grey" id="setfriends">set</p>
+								</div>
+							</div>
+							</div>
 					<input type="hidden" value="" id="friendlist" name='friendlist'>
 					<button class="post w3-button w3-white" type="submit"><i class="fa fa-pencil"></i> Post</button>
 					</form>
@@ -201,15 +203,15 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 			 <form method="post" class="inline" id ="postform_<%= post._id %>">
 			 <img src="../<%=post.postby.image%>" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
 			 <time id="then" class="w3-right w3-opacity" datetime="<%= post.date%>"></time>
-			 <h4><%=post.postby.name.first%> <%=post.postby.name.last%></h4><br>
-			 <hr class="w3-clear">
-			 <p><%= post.body %></p>
+			 <h4><a href='/profile/<%=post.postby.local.email%>'><%=post.postby.name.first%> <%=post.postby.name.last%></a></h4><br>
+			 <hr class="w3-clear"></hr>
+			 <div style='width:100px;'><%= post.body %></div>
 			 <!-- <img src="<%=post.image%>" style="width:100%" class="w3-margin-bottom"> -->
-			 <div id ="comment_area<%=index%>"  class='w3-card w3-white w3-margin'>
+			 <div id ="comment_area<%=index%>"  class='w3-card w3-white w3-margin' style='width:100%;'>
 				 <% post.comments.forEach(function(comments){%>
 					 <div class='w3-card-2 w3-white' style="width:100%">
-						 <p style="width:100%"><%= comments.text%></p>
-				 </div>
+						 <p style="width:100%;word-wrap: break-word;"><%= comments.text%></p>
+				 	</div>
 				 <%})%>
 			 </div>
 			 <input type="text" name="comment" id ='comment' style="width:80%">
@@ -220,6 +222,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 		 <% }) %>
 	</div>
 			<div id="Schedule" class="tabcontent">
+
         	<% if(owner._id == user._id){%>
 				  <button onclick="document.getElementById('id02').style.display='block'" class="w3-button w3-white">Create Schedule</button>
 					<br><br>
@@ -235,7 +238,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 								-------
 								<input type="text" id="eDate" name ="eDate" data-format="YYYY-MM-DD HH:mm" data-template="YYYY MMM-DD H:mm" placeholder="End Date" />
 								<br><br>
-								<div id="id01">
+								<div>
 									<input type="checkbox" name="options[]" value="1" />Mon
 									<input type="checkbox" name="options[]" value="2" />Tue
 									<input type="checkbox" name="options[]" value="3" />Wed
@@ -253,21 +256,21 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 					<br>
 					<br>
           <%}%>
-					<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:80%;min-width:400px'>
-						<div class="dhx_cal_navline">
-							<div class="dhx_cal_prev_button">&nbsp;</div>
-							<div class="dhx_cal_next_button">&nbsp;</div>
-							<div class="dhx_cal_today_button"></div>
-							<div class="dhx_cal_date"></div>
-							<div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
-							<div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
-							<div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
-						</div>
-						<div class="dhx_cal_header">
-						</div>
-						<div class="dhx_cal_data">
-						</div>
-					</div>
+          <div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:80%;z-index:0;'>
+            <div class="dhx_cal_navline">
+              <div class="dhx_cal_prev_button">&nbsp;</div>
+              <div class="dhx_cal_next_button">&nbsp;</div>
+              <div class="dhx_cal_today_button"></div>
+              <div class="dhx_cal_date"></div>
+              <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+              <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+              <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+            </div>
+            <div class="dhx_cal_header">
+            </div>
+            <div class="dhx_cal_data">
+            </div>
+</div>
 				</div>
 				<div id="Resume" class="tabcontent">
           	<% if(owner._id == user._id){%>
@@ -283,6 +286,8 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 
 			</div>
 	</div>
+
+
 <script>
 
 // Used to toggle the menu on smaller screens when clicking on the menu button

@@ -65,12 +65,6 @@ textarea{
 }
 */
 
-#profRight {
-	/*width: 65%;
-	padding: 16px ;
-	float: right;
-	margin-left:5%*/
-}
 
 .tabcontent {
 	display: none;
@@ -79,8 +73,7 @@ textarea{
 #tlBox {
 	background-color: maroon;
 	border-radius: 0px 15px 15px 15px;
-	width: 94%;
-	/*height: 94%;*/
+	width: 100%;
 	padding: 3%;
 }
 

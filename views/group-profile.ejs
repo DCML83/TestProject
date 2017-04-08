@@ -13,25 +13,59 @@
 <script src="../JS/momentjs.js"></script>
 </head>
 <body>
-<!-- <div id="banner">
-	<h2>Test Information</h2>
-	<p>some nonsense I guess</p>
-</div> -->
-<div class="w3-bar w3-border  w3-text-white w3-collaspe " id="nav_bar">
-	<a href="#" class="w3-bar-item w3-button w3-hover-none  w3-hover-text-grey w3-padding-16">MUNSSN</a>
-	<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hover-text-grey w3-padding-16">Group</a>
-	<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Friends</a>
-	<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16">Lost and Found</a>
-	<div class="w3-dropdown-hover w3-right">
-<button class="w3-button w3-hover-none w3-hover-text-grey"><img src="../<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" ><%= user.name.first%></p></button>
-<div class="w3-dropdown-content w3-bar-block w3-cards">
-	<a href="/profile" class="w3-bar-item w3-button">profile</a>
-	<a href="#" class="w3-bar-item w3-button">Setting</a>
-	<a href="/logout" class="w3-bar-item w3-button">Logout</a>
-</div>
-</div>
-</div>
-<div id="body_div">
+	<div class="w3-top w3-moblie">
+		<div class="w3-bar w3-text-white w3-left-align" id="nav_bar">
+			<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-16 w3-hover-text-grey w3-large " href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+			<a href="/profile" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-home "></i> MUNSSN</a>
+			<a href="/group" class="w3-bar-item w3-button w3-hide-small w3-hover-none w3-hover-text-grey w3-padding-16"><i class="fa fa-users fa-fw "></i> Group</a>
+			<a href="/friend" class="w3-bar-item w3-button  w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-user"></i> Friends</a>
+			<a href="/lostandfound" class="w3-bar-item w3-button w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-circle-o-notch fa-fw "></i> Lost and Found</a>
+			<a href="/coursepoll" class="w3-bar-item w3-button  w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-question-circle-o fa-fw "></i> Course Poll</a>
+			<a href="/chatroom" class="w3-bar-item w3-button w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-envelope w"></i> Chatroom</a>
+			<div class="w3-dropdown-hover  w3-large" style="margin-top:10px;background-color:maroon;">
+				<button class="w3-button w3-text-white">
+					<i class="fa fa-bell w3-large"></i>
+					<span class="w3-badge w3-right w3-medium w3-blue">
+						<%=requestStatus.length%>
+					</span>
+				</button>
+				<div class="w3-dropdown-content w3-bar-block w3-cards"  style="width:400px">
+					<!--display friend request as notification-->
+					<% requestStatus.forEach(function(user) {%>
+						<div class="w3-card w3-contianer">
+						<p>  <%=user.requester.name.first%> <%=user.requester.name.last%> sending you a friend request</p>
+						<time id="then" datetime="<%= user.dateAccepted%>"></time>
+						<form action ="/acceptRequest" method = "post">
+							<input type="hidden" name="requester" value="<%=user.requester%>" </p>
+							<button type="submit" class="w3-green"> Accept Request </button>
+							<button type="submit" class="w3-red"> Deny Request </button>
+						</form>
+					</div>
+						<% }) %>
+					</div>
+				</div>
+			<div class="w3-right">
+					<div class="w3-dropdown-hover w3-red">
+						<button class="w3-button"><img src="../<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
+						<div class="w3-dropdown-content w3-bar-block w3-card-4">
+							<a href="/profile" class="w3-bar-item w3-button">profile</a>
+							<a href="/setting" class="w3-bar-item w3-button">Setting</a>
+							<a href="/logout" class="w3-bar-item w3-button">Logout</a>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+	<div id="navDemo" class=" w3-bar-block w3-hide w3-hide-large w3-text-white w3-hide-medium w3-large">
+		<a href="/profile" class="w3-bar-item w3-button w3-hover-none  w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-home w3-margin-right"></i>MUNSSN</a>
+		<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-users fa-fw w3-margin-right"></i>Group</a>
+		<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-user w3-margin-right"></i>Friends</a>
+		<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-circle-o-notch fa-fw w3-margin-right"></i>Lost and Found</a>
+		<a href="/coursepoll" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-question-circle-o fa-fw w3-margin-right"></i>Course Poll</a>
+		<a href="/chatroom" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-envelope w3-margin-right"></i>Chatroom</a>
+	</div>
+<div id="body_div" class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+
 	<div id = "profLeft" class ="w3-third">
 		<div class="w3-card">
 			<div class="w3-card-2 w3-red">
@@ -42,6 +76,12 @@
       <h4><b><%=group.name%></b></h4>
 			<h4>Description</h4>
 			<p><%=group.description%></p>
+			<%  if(group.type == 'public'){%>
+				<form method="post" enctype="multipart/form-data" action="/joingroup">
+					<input type='hidden' name="id" value='<%=group._id%>'>
+					<input type="submit" value="join Group">
+					</form>
+			<%}%>
 		</div>
 
 	</div>
@@ -51,7 +91,7 @@
 
 		<div id = "tab">
 			<button class="tablink" onclick="openTab(event, 'Timeline')" id="defaultLoad">Timeline</button>
-			<button class="tablink" onclick="openTab(event, 'Schedule')">Schedule</button>
+			<button class="tablink" onclick="openTab(event, 'file')">File</button>
 		</div>
 		<div id = "tlBox">
 			<div id="Timeline" class="tabcontent">
@@ -83,17 +123,12 @@
 </div>
  <% }) %>
 			</div>
-			<div id="Schedule" class="tabcontent">
-				  <button onclick="document.getElementById('id02').style.display='block'" class="w3-button w3-white">Create Schedule</button>
-					<div id="id02" class="w3-modal">
-						<div class="w3-modal-content">
-		<div class="w3-container">
-			<span onclick="document.getElementById('id02').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-			<p>Enter Schedule Information</p>
-
-
-
-		</div>
+			<div id="file" class="tabcontent">
+				<form method="post" enctype="multipart/form-data" action="/groupfile">
+					<input type="file" name='pdf'/>
+					<input type='hidden' name="id" value='<%=group._id%>'>
+					<input type="submit" value="Submit">
+					</form>
 	</div>
 </div>
 			</div>
@@ -103,21 +138,5 @@
 	</div>
 
 </div>
-
-<script type ="text/javascript">
-  function submitText(event){
- 	 var form = event.form;
- 	var div  = form.querySelector('#comment_area');
- 		add(form, div);
-  }
-
-  function add(form ,div, s){
- 	var para = document.createElement("p");
- 	var node = document.createTextNode(form.comment.value);
- 	para.appendChild(node);
-    div.appendChild(para);
-    form.comment.value =""
- 	}
- </script>
 </body>
 </html>

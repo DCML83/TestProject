@@ -17,6 +17,9 @@
 <div class="w3-bar w3-border w3-text-white "id="nav_bar">
 	<span class="w3-bar-item"></span>
 <h1 class="w3-bar-item">MUNSSN</h1>
+<% if (lmessage.length > 0) { %>
+		<div class="alert alert-danger"><%= lmessage %></div>
+<% } %>
   <span  class="w3-bar-item w3-right"><form action="/login" method="post">
 		<span class="w3-bar-item w3-small" >Email:<br><input type="text" name="email" value=""class="w3-border " ></span>
 		<span  class="w3-bar-item w3-small" >Password:<br><input type="password" name="password" value="" class=" w3-border " ></span>
@@ -63,6 +66,9 @@
 					<br><br>
 					<button type="submit" class= "w3-button w3-red">Signup</button>
 				</form>
+				<% if (smessage.length > 0) { %>
+						<div class="alert alert-danger"><%= smessage %></div>
+				<% } %>
 	</div>
 
 </div>

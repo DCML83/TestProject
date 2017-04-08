@@ -1,4 +1,5 @@
 var User = require('../app/model/user').User;
+var FriendsOfFriends = require('../app/model/user').FriendsOfFriends;
 var db = require('../config/database.js');
 var Post  = require('../app/model/posts').Post;
 var Group = require('../app/model/groups').Group;
@@ -33,20 +34,14 @@ module.exports = function(app, server, passport) {
 
 	//home page
 	app.get('/', function(req, res) {
-		res.render('index.ejs',{ message: req.flash('signupMessage') }); // load the index.ejs file
+		res.render('index.ejs',{ smessage: req.flash('signupMessage'), lmessage:req.flash('loginMessage') }); // load the index.ejs file
 	});
 
-	// app.get('/signup', function(req,res){
-	//
-	// 	//render the page and pass in any flash data if it exists
-	// 	res.render('signup.ejs', { message: req.flash('signupMessage') });
-	// });
 
 	app.get('/lostandfound', isLoggedIn, function(req,res){
 
 		lostFound.find({}).populate('postby').exec(function(err, docs){
-			var collection = req.db.collection('friendships');
-			collection.find({'requested':req.user._id, 'status':'Pending'},function(err, request){
+		req.user.getReceivedRequests(function(err,request){
 		 res.render('lostFound.ejs',{
 				'postlist' : docs,
 				user : req.user,
@@ -58,8 +53,7 @@ module.exports = function(app, server, passport) {
 
 	app.get('/group', isLoggedIn, function(req,res, done){
 		Group.find({'_id': {$in: req.user.group}}, function(err,groups){
-			var collection = req.db.collection('friendships');
-			collection.find({'requested':req.user._id, 'status':'Pending'},function(err, request){
+			req.user.getReceivedRequests(function(err,request){
 				res.render('Groups.ejs',{
 				user:req.user,
 				groups: groups,
@@ -69,22 +63,19 @@ module.exports = function(app, server, passport) {
 		});
 	});
 app.get('/group/:id', isLoggedIn, function(req, res){
-	Group.findOne({'_id':req.params.id}, function(err, g){
-			var pl=[];
-			var collection = req.db.collection('friendships');
-			collection.find({'requested':req.user._id, 'status':'Pending'},function(err, request){
+	Group.findOne({'_id':req.params.id}).populate('posts').exec(function(err, g){
+			req.user.getReceivedRequests(function(err,request){
 			res.render('Group-profile.ejs',{
 					user:req.user,
 					group:g,
-					postlist:pl,
+					postlist:g.posts,
 					requestStatus:request,
 			});
 			});
 	});
 	});
 	app.get('/setting', isLoggedIn, function(req,res){
-		var collection = req.db.collection('friendships');
-		collection.find({'requested':req.user._id, 'status':'Pending'},function(err, request){
+		req.user.getReceivedRequests(function(err,request){
 		res.render('editProfile.ejs',{
 				user:req.user,
 				requestStatus:request,
@@ -202,6 +193,12 @@ app.post('/saveDate', isLoggedIn, function(req, res, done){
 		newSchedule.owner = req.user;
 		newSchedule.save(function(error){
 			if (!error){
+				User.findOne({'_id':req.user.id},function(err, user){
+					user.course.push(newSchedule.id);
+					user.save(function(err){
+						if(err){console.log(err);}
+					})
+				});
 				res.redirect(req.get('referer'));
 				return done(null, newSchedule);
 			}
@@ -232,23 +229,24 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 });
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this ( the isLoggedIn function)
-	app.get('/profile', isLoggedIn, function(req,res){
+	app.get('/profile', isLoggedIn, function(req,res, done){
 		var currentUser = req.user;
 		Post.find({postto: currentUser._id}).populate('postby').exec(function(err, posts){
-				var col = req.db.collection('friendships');
-				col.find({'requested':currentUser._id, 'status':'Pending'},function(err, request){
+				req.user.getReceivedRequests(function(err,request){
 						var suggested =[];
 						currentUser.getFriendsOfFriends(function(err, fof){
-							
+							fof.forEach(function(f){
+								if (include(f._id,currentUser.friends)){return;}
+									suggested.push(f);
+								});
+
 							User.find({$and:[{'Major':currentUser.Major},{'_id':{$ne:currentUser._id}}]},function(err, users){
 								users.forEach(function(user){
 									if (include(user._id,currentUser.friends)){return;}
 										suggested.push(user);
 									});
 							});
-							suggested = suggested.concat(fof);
 							User.find({'_id':{$in:currentUser.friends}},function(err, friends){
-								console.log(suggested);
 								posts.reverse();
 								res.render('profile.ejs',{
 									postlist: posts,
@@ -263,21 +261,20 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 				});
 			});
 		});
-	app.get('/data/:id', function(req, res){
-		//Schedule.find({owner: req.user._id}, function(error, thing){
-		var db = req.db;
-		var id = new ObjectId(req.params.id);
-		console.log(req.params.id);
-		var schedule = db.collection("schedules");
-		schedule.find({'owner': id}, function(err, data){
+
+app.get('/data/:id', function(req, res){
+	//Schedule.find({owner: req.user._id}, function(error, thing){
+	var id = new ObjectId(req.params.id);
+	Schedule.find({'owner': id}, function(err, data){
         //set id property for all records
-       		for (var i = 0; i < data.length; i++)
+        for (var i = 0; i < data.length; i++)
             data[i].id = data[i]._id;
 
         //output response
-        	res.send(data);
-    	});
-	});
+        res.send(data);
+	//	});
+    });
+});
 			app.get('/profile/:id', isLoggedIn, function(req,res){
 				var owner = req.params.id;
 				User.findOne({'local.email': owner}, function (err, sid){
@@ -338,17 +335,38 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 		res.redirect('/');
 	});
 	app.get('/coursepoll', isLoggedIn,function(req,res){
-		Poll.find({}).populate('postby').exec(function(err, polls){
+		var list=[];
+		list = req.user.friends.concat(req.user._id);
+		console.log(list);
+		Poll.find({'postby':{$in:list}}).populate('postby course').exec(function(err, polls){
 			var find =[];
+			var pollist =[];
+			console.log(polls);
+			User.findOne({'_id':req.user._id}).populate('course').exec(function(err,user){
+				console.log(user);
 				polls.forEach(function(p){
 					find.push(include(req.user._id, p.voter));
+					user.course.forEach(function(c){
+						if(compareString(p.course.text,c.text)){
+								pollist.push(p);
+						}
+					});
+
 				});
-				console.log(find);
+				console.log(pollist);
+				Schedule.find({'owner':req.user._id},function(err,course){
+				req.user.getReceivedRequests(function(err,request){
+
 				res.render('pollview.ejs',{
 					 user:req.user,
-					 pollist:polls,
+					 pollist:pollist,
 					 voted: find,
+					 course:course,
+					 requestStatus:request,
 				 });
+			 });
+				 	});
+						});
 			});
 		});
 
@@ -487,9 +505,12 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 		failureFlash : true // allow flash messages
 	}));
 	app.get('/chatroom', isLoggedIn,function(req, res){
+		req.user.getReceivedRequests(function(err,request){
 	  res.render('chatroom.ejs',{
 			user: req.user,
+			requestStatus:request,
 		});
+	});
 	});
 	//start connenction for  socket io
 	io.on('connection', function(socket){

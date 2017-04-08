@@ -8,12 +8,9 @@ var ObjectId = Schema.Types.ObjectId;
 
 //define the schema for the group model
 
-var members = new Schema({
-	memUser : [{type: ObjectId, ref: 'User'}],
-});
 
 var groupSchema = mongoose.Schema({
-	owner: [{type: ObjectId, ref: 'User'}],
+	owner: {type: ObjectId, ref: 'User'},
 	image: {type: String, default: 'images/group.png'},
 	name: String,
 	description: String,
