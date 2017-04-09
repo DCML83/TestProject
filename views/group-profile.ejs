@@ -83,7 +83,12 @@
 					<input type='hidden' name="id" value='<%=group._id%>'>
 					<input type="submit" value="join Group">
 					</form>
-			<%}%>
+			<%}else{%>
+					<form method="post" enctype="multipart/form-data" action="/requestjoin">
+						<input type='hidden' name="id" value='<%=group._id%>'>
+						<input type="submit" value="Request">
+						</form>
+				<%}%>
 		</div>
 
 	</div>
@@ -99,9 +104,9 @@
 			<div id="Timeline" class="tabcontent">
 
 				<div id="postBox">
-					<form action="/post" method="post">
+					<form action="/gpost" method="post">
 					<textarea name="message" rows="4" placeholder="Enter message here."></textarea><br>
-          <input type="hidden" name="group_id" value="<%= group._id %>">
+          <input type="hidden" name="group_id" value="<%=group._id %>">
 					<button class="post w3-button w3-white" type="submit"><i class="fa fa-pencil"></i> Post</button>
 					</form>
 				</div>

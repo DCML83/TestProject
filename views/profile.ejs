@@ -137,25 +137,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
   	</div>
 
 
-	<div class="w3-contianer w3-card-3 w3-blue">
-	<% if(owner._id == user._id){%>
-		<h4 class='w3-text-black'> <b>suggested Friends<b></h4>
-		<% suggestedFriends.forEach(function(friend) {%>
-		<form action="/requestFriend" method="post">
-      <a href='/profile/<%=friend.local.email%>'><%=friend.name.first %> <%=friend.name.last%></a><br>
-		<input type ='hidden' name='email' value='<%=friend.local.email%>'/>
-		<button type="submit"> Add Friend </button>
-		</form>
-		<% }) %>
-		<% } %>
-		<h4 class='w3-text-black'> <b>Friends<b></h4>
-		<% friends.forEach(function(friend) {%>
-      <div clas='w3-contianer w3-card w3-blue ' style='height:30px'>
-				 <img src="../<%=friend.image%>" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:20px;left:25px;">
-         <a href='/profile/<%=friend.local.email%>'><%=friend.name.first %> <%=friend.name.last%></a>
-       </div>
-		<% }) %>
-		</div>
+
 			</div>
 		</div>
 

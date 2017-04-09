@@ -1,18 +1,129 @@
-<link rel="stylesheet" type="text/css" href="Friends.css">
 <html>
+<head>
+<meta charset="utf-8">
+<title>MUNSSN-Course Polling</title>
+<link rel="stylesheet" type="text/css" href="CSS/Friends.css">
+<link href="CSS/navCSS.css" rel="stylesheet" type="text/css">
+<link href="CSS/pollview.css" rel="stylesheet" type="text/css">
+<link href="CSS/eiCSS.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
+<script src="JS/eiJS.js"></script>
+<script src="JS/momentjs.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+</head>
+<body>
+	<div class="w3-top w3-moblie">
+		<div class="w3-bar w3-text-white w3-left-align" id="nav_bar">
+			<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-16 w3-hover-text-grey w3-large " href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+			<a href="/profile" class="w3-bar-item w3-button  w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-home "></i> MUNSSN</a>
+			<a href="/group" class="w3-bar-item w3-button w3-hide-small w3-hover-none w3-hover-text-grey w3-padding-16"><i class="fa fa-users fa-fw "></i> Group</a>
+			<a href="/friend" class="w3-bar-item w3-button  w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-user"></i> Friends</a>
+			<a href="/lostandfound" class="w3-bar-item w3-button w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-circle-o-notch fa-fw "></i> Lost and Found</a>
+			<a href="/coursepoll" class="w3-bar-item w3-button  w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-question-circle-o fa-fw "></i> Course Poll</a>
+			<a href="/chatroom" class="w3-bar-item w3-button w3-hide-small w3-hover-none  w3-hover-text-grey w3-padding-16"><i class="fa fa-envelope w"></i> Chatroom</a>
+			<div class="w3-dropdown-hover  w3-large" style="margin-top:10px;background-color:maroon;">
+				<button class="w3-button w3-text-white">
+					<i class="fa fa-bell w3-large"></i>
+					<span class="w3-badge w3-right w3-medium w3-blue">
+						<%=requestStatus.length%>
+					</span>
+				</button>
+				<div class="w3-dropdown-content w3-bar-block w3-cards"  style="width:400px">
+					<!--display friend request as notification-->
+					<% requestStatus.forEach(function(user) {%>
+						<div class="w3-card w3-contianer">
+						<p>  <%=user.requester.name.first%> <%=user.requester.name.last%> sending you a friend request</p>
+						<time id="then" datetime="<%= user.dateAccepted%>"></time>
+						<form action ="/acceptRequest" method = "post">
+							<input type="hidden" name="requester" value="<%=user.requester%>" </p>
+							<button type="submit" class="w3-green"> Accept Request </button>
+							</form>
+							<form action ="//denyRequest" method = "post">
+							<button type="submit" class="w3-red"> Deny Request </button>
+						</form>
+					</div>
+						<% }) %>
+					</div>
+				</div>
+			<div class="w3-right">
+					<div class="w3-dropdown-hover w3-red">
+						<button class="w3-button"><img src="../<%=user.image%>"class="w3-bar-item" width="42px" height="42px"><p class="w3-bar-item w3-margin-right" id='user_email' alt='<%=user.local.email%>'><%= user.name.first%></p></button>
+						<div class="w3-dropdown-content w3-bar-block w3-card-4">
+							<a href="/profile" class="w3-bar-item w3-button">profile</a>
+							<a href="/setting" class="w3-bar-item w3-button">Setting</a>
+							<a href="/logout" class="w3-bar-item w3-button">Logout</a>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+	<div id="navDemo" class=" w3-bar-block w3-hide w3-hide-large w3-text-white w3-hide-medium w3-large">
+		<a href="/profile" class="w3-bar-item w3-button w3-hover-none  w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-home w3-margin-right"></i>MUNSSN</a>
+		<a href="/group" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-users fa-fw w3-margin-right"></i>Group</a>
+		<a href="/friend" class="w3-bar-item w3-button  w3-hover-none  w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-user w3-margin-right"></i>Friends</a>
+		<a href="/lostandfound" class="w3-bar-item w3-button  w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-circle-o-notch fa-fw w3-margin-right"></i>Lost and Found</a>
+		<a href="/coursepoll" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-question-circle-o fa-fw w3-margin-right"></i>Course Poll</a>
+		<a href="/chatroom" class="w3-bar-item w3-button w3-hover-none w3-hide-large	 w3-hover-text-grey w3-padding-16"><i class="fa fa-envelope w3-margin-right"></i>Chatroom</a>
+	</div>
+  <div class="w3-container w3-content" style="max-width:1400px;margin-top:100px">
     <div id="main-box">
         <div id="SearchBar">
-            <input type="text" placeholder="SEARCH..."class="search" />
-            <button type="button"class="button">Search</button>
+            <input type="text" placeholder="SEARCH..."class="search" id='searchtext'/>
+            <button type="button"class="button" id='friendsearch'>Search</button>
         </div>
-        <div id="SuggestedFriends">
-            <h1>Suggested Friends</h1>
-        </div>
-        <div id="YourFriends">
-            <h2>Friends</h2>
-        </div>
+            <div class="w3-contianer w3-card-3" style="margin-top:50px">
+              <h4 class='w3-text-white'> <b>suggested Friends<b></h4>
+              <%if(suggestedFriends.length !=0){%>
+
+              <% suggestedFriends.forEach(function(friend) {%>
+              <form action="/requestFriend" method="post">
+                <a href='/profile/<%=friend.local.email%>'><%=friend.name.first %> <%=friend.name.last%></a>
+              <input type ='hidden' name='email' value='<%=friend.local.email%>'/>
+              <button type="submit"> Add Friend </button>
+              </form>
+              <% }) %>
+              <%} else{ %>
+                <p class="w3-text-grey"> No Suggested Friends<p>
+                  <%}%>
+            </div>
+            <div class="w3-contianer w3-card-3 w3-margin-top">
+              <h4 class='w3-text-white'> <b>All Friends<b></h4>
+              <% friends.forEach(function(friend) {%>
+                <div clas='w3-contianer w3-card w3-blue ' style='height:30px'>
+                   <img src="../<%=friend.image%>" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:20px;left:25px;">
+                   <a href='/profile/<%=friend.local.email%>'><%=friend.name.first %> <%=friend.name.last%></a>
+                 </div>
+              <% }) %>
+              </div>
         <div id="copyright">
             <h3> ALL RIGHTS RESERVED</h3>
         </div>
     </div>
+  </div>
+</body>
+<script>
+$(function(){
+var socket = io().connect();
+$('#friendsearch').click(function(event){
+  var searchText= $('#searchtext').val();
+  var info ={search:searchText};
+  socket.emit('searchfriend', info);
+  $('#searchtext').val('')
+  return false
+  });
+
+socket.on('searchfriend', function(info){
+  drawRect(info.totalVote, info.Options,click);
+  });
+
+});
+
+</script>
 </html>

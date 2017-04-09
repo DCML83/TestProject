@@ -50,6 +50,35 @@ module.exports = function(app, server, passport) {
 		});
 	});
 
+	app.get('/friend', isLoggedIn, function(req,res){
+		var currentUser=req.user;
+  User.find({'_id':{$in:currentUser.friends}},function(err, friends){
+		var suggested =[];
+		currentUser.getFriendsOfFriends(function(err, fof){
+			fof.forEach(function(f){
+				if (include(f._id,currentUser.friends)){return;}
+					suggested.push(f);
+				});
+
+			User.find({$and:[{'Major':currentUser.Major},{'_id':{$ne:currentUser._id}}]},function(err, users){
+				users.forEach(function(user){
+					if (include(user._id,currentUser.friends)){return;}
+						suggested.push(user);
+					});
+			});
+		currentUser.getReceivedRequests(function(err,request){
+    res.render('Friends.ejs',{
+      user: req.user,
+      friends: friends,
+			suggestedFriends:suggested,
+			requestStatus:request,
+
+    });
+	});
+  });
+});
+});
+
 	app.get('/group', isLoggedIn, function(req,res, done){
 		Group.find({'_id': {$in: req.user.group}}, function(err,groups){
 			req.user.getReceivedRequests(function(err,request){
@@ -61,9 +90,11 @@ module.exports = function(app, server, passport) {
 			});
 		});
 	});
-app.get('/group/:id', isLoggedIn, function(req, res){
-	Group.findOne({'_id':req.params.id}).populate('posts').exec(function(err, g){
+app.get('/group/:email', isLoggedIn, function(req, res){
+	Group.findOne({'name':req.params.email}).populate('posts').exec(function(err, g){
+		console.log(g);
 			req.user.getReceivedRequests(function(err,request){
+				console.log(g.posts);
 			res.render('Group-profile.ejs',{
 					user:req.user,
 					group:g,
@@ -307,19 +338,6 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 		var currentUser = req.user;
 		Post.find({postto: currentUser._id}).populate('postby').exec(function(err, posts){
 				req.user.getReceivedRequests(function(err,request){
-						var suggested =[];
-						currentUser.getFriendsOfFriends(function(err, fof){
-							fof.forEach(function(f){
-								if (include(f._id,currentUser.friends)){return;}
-									suggested.push(f);
-								});
-
-							User.find({$and:[{'Major':currentUser.Major},{'_id':{$ne:currentUser._id}}]},function(err, users){
-								users.forEach(function(user){
-									if (include(user._id,currentUser.friends)){return;}
-										suggested.push(user);
-									});
-							});
 							User.find({'_id':{$in:currentUser.friends}},function(err, friends){
 								posts.reverse();
 								res.render('profile.ejs',{
@@ -328,8 +346,8 @@ app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 									owner:req.user,
 									friends: friends,
 									requestStatus: request,
-									suggestedFriends: suggested,
-								});
+									// suggestedFriends: suggested,
+
 							});
 						});
 				});
@@ -473,7 +491,21 @@ app.get('/data/:id', function(req, res){
 		});
 	});
 	app.post('/gpost', isLoggedIn, function(req,res, done){
-		newPost(req,res);
+		Group.findOne({'_id':req.body.group_id},function (err,group){
+			console.log(group);
+			var newPost = new Post();
+			newPost.postby = req.user.id;
+			newPost.postto = group._id;
+			newPost.body = req.body.message;
+			newPost.date = moment().format();
+			newPost.save(function(err){
+				group.posts.push(newPost._id);
+				group.save(function(err){
+
+				});
+				res.redirect(req.get('referer'));
+			});
+		});
 	});
 
 	app.post('/requestFriend', isLoggedIn, function(req, res){
@@ -630,6 +662,15 @@ app.get('/data/:id', function(req, res){
 			});
 		});
 	});
+
+	socket.on('searchfriend', function(msg){
+		console.log(msg);
+		User.find({$or:[{'name.first': {$regex : /c/}},{'name.last' : {$regex : /msg.search$/}}]},function(err,user){
+			console.log(user);
+		});
+
+	io.emit('searchfriend', msg);
+});
 });
 
 };
