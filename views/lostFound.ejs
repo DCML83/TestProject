@@ -46,11 +46,13 @@
     					<div class="w3-card w3-contianer">
     					<p>  <%=user.requester%> sending you a friend request</p>
     					<time id="then" datetime="<%= user.dateAccepted%>"></time>
-    					<form action ="/acceptRequest" method = "post">
-    						<input type="hidden" name="requester" value="<%=user.requester%>" </p>
-    						<button type="submit" class="w3-green"> Accept Request </button>
-    						<button type="submit" class="w3-red"> Deny Request </button>
-    					</form>201
+              <form action ="/acceptRequest" method = "post">
+                <input type="hidden" name="requester" value="<%=user.requester%>" </p>
+                <button type="submit" class="w3-green"> Accept Request </button>
+                </form>
+                <form action ="//denyRequest" method = "post">
+                <button type="submit" class="w3-red"> Deny Request </button>
+              </form>
     				</div>
     					<% }) %>
     				</div>
@@ -68,22 +70,30 @@
     			</div>
     		</div>
     </div>
-    <div class='body-view'>
-      <div class="map-view">
-    <center>
-      <div id="map"></div>
-      <div id="message"></div>
-    </center>
-    </div>
 
-    <div class="post-view">
+
+
+    <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+      <div class="map-view w3-half w3-card w3-moblie" >
+          <div id="map" style='width:100%' style='position:fixed'></div>
+          <div id="message"></div>
+        </div>
+    <div class="post-view w3-card w3-half ">
       <% postlist.forEach(function(post, index) { %>
-      	<div class="w3-panel w3-card-2 w3-white">
-      		<img src='<%=post.postby.image%>' width='50' height="50">
-      		<span> <%=post.postby.name.first%> <%=post.postby.name.last%></span> <br> <time id="then" datetime="<%= post.date%>"></time>
+        <div class="w3-container w3-card-2 w3-white w3-round w3-margin"><br>
+      		<img src='<%=post.postby.image%>' class="w3-left w3-circle w3-margin-right" style="width:60px">
+      		<span> <%=post.postby.name.first%> <%=post.postby.name.last%></span>
+          <time id="then"  class="w3-right w3-opacity" datetime="<%= post.date%>"></time>
           <p><%= post.body %></p>
-
           <img src='<%=post.picture%>' width='200px' height="200px">
+          <form action='/removelfpost' method = "post" id ='removepost<%=index%>'>
+            <input type="hidden" name="post" value="<%=post._id%>">
+            <button type="submit" class="w3-red"> Remove Post </button>
+            </form>
+            <br>
+            <button class="w3-green" id='claim<%=index%>'> Claim  Item</button>
+            <br><span id ='contact<%=index%>'></span>
+
       </div>
        <% }) %>
     </div>
@@ -105,16 +115,21 @@
 
         //ejs only part, adjust to the post information you are passing in
       <% for (var i = 0; i <  postlist.length; i++){ %>
-          var pMarker = new google.maps.Marker({
+          var pMarker<%=i%> = new google.maps.Marker({
             position: new google.maps.LatLng<%= postlist[i].location%>,
             map: map
           });
-          contentWindow = new google.maps.InfoWindow({
-            content:" <p><%= postlist[i].body %></p><img src='<%= postlist[i].picture %>' width='200px' height='200px'/>"
+          contentWindow<%=i%> = new google.maps.InfoWindow({
+            content:"<div class='w3-container w3-card-2 w3-white w3-round w3-margin'><br>"+
+          		"<img src='<%=postlist[i].postby.image%>' class='w3-left w3-circle w3-margin-right' style='width:60px'>"+
+          		"<span> <%=postlist[i].postby.name.first%> <%=postlist[i].postby.name.last%></span>"+
+              "<time id='then'  class='w3-right w3-opacity' datetime='<%= postlist[i].date%>'></time>"+
+              "<p><%= postlist[i].body %></p>"+
+              "<img src='<%=postlist[i].picture%>' width='200px' height='200px'>"
           })
-          google.maps.event.addListener(pMarker, 'click', function() {
+          google.maps.event.addListener(pMarker<%=i%>, 'click', function() {
             // document.getElementById('form').style.display='block';
-            contentWindow.open(map, pMarker);
+            contentWindow<%=i%>.open(map, pMarker<%=i%>);
           });
       <%  } %>
         // here finishes the ejs only part
@@ -198,6 +213,42 @@
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBf013VduAovGDVoWwtLeyplwvG4CcLSQQ&callback=initMap">
+    </script>
+
+    <script>
+    $(document).ready(function(){
+      <% for (var i = 0; i<postlist.length; i++){%>
+        if('<%=postlist[i].postby._id%>' != '<%=user._id%>'){
+        $('#removepost<%=i%>').hide();
+        }
+
+        $('#claim<%=i%>').click(function(event){
+            if(!findUser){
+              $('#contact<%=i%>').text('Contact Information:<%=postlist[i].contact.email%>');
+            }
+            else{
+              $('#contact<%=i%>').text('Contact Information:<%=postlist[i].contact.phone%>');
+
+            }
+        });
+    <%}%>
+    });
+    function findUser(){
+      <% postlist.forEach(function(p, index){%>
+        <% p.postby.friends.forEach(function(f){%>
+          if('<%=f%>' == '<%=user._id%>'){
+            return true;
+          }
+        <%  }) %>
+
+      <%  }) %>
+
+
+      return false;
+    }
+
+
+
     </script>
   </body>
 </html>

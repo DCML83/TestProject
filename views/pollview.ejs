@@ -44,6 +44,8 @@
 						<form action ="/acceptRequest" method = "post">
 							<input type="hidden" name="requester" value="<%=user.requester%>" </p>
 							<button type="submit" class="w3-green"> Accept Request </button>
+							</form>
+							<form action ="//denyRequest" method = "post">
 							<button type="submit" class="w3-red"> Deny Request </button>
 						</form>
 					</div>
@@ -95,7 +97,7 @@
  <input type ="hidden" value ="<%= pollist.length%>" id='length'/>
   <% pollist.forEach(function(poll, index){%>
 		<div class='w3-container w3-card-2 w3-white w3-round w3-margin'>
-    <img src='<%=poll.postby.image%>' width="50" height="50"/>
+			<img src="../<%=poll.postby.image%>" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
     <span> <%=poll.postby.name.first%> <%=poll.postby.name.last%> </span><br>
 		<time id="then" class="w3-right w3-opacity" datetime="<%= poll.date%>"></time>
 		<span><%=poll.course.text%></span>
@@ -119,6 +121,7 @@
 		</div>
 
       <button type="submit" value="<%=poll._id%>" id='vote<%=index%>' alt="<%=index%>">Vote</button><br>
+			<br>
 			</div>
 <%  }) %>
 </div>

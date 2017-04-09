@@ -16,7 +16,6 @@ var md5 = require("blueimp-md5");
 var path = require('path');
 var friendsOfFriends = require('friends-of-friends');
 var rootpath = path.dirname(require.main.filename);
-var type = upload.single('picture');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 module.exports = function(app, server, passport) {
@@ -115,6 +114,7 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 		});
 
 	});
+	var type = upload.single('picture');
 	app.post('/lostfoundpost', type, isLoggedIn, function(req,res,done){
 		var tmp_path = req.file.path;
 		var mimetype = req.file.mimetype.split("/");
@@ -154,6 +154,7 @@ app.get('/group/:id', isLoggedIn, function(req, res){
 // post route to handle user edit_profile_picture image
 // it take user's id and query the record from database and update the path
 // for the user image
+var type = upload.single('picture');
 app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
 	var tmp_path = req.file.path;
 	var mimetype = req.file.mimetype.split("/");
@@ -178,40 +179,45 @@ app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
 		})
 	});
 });
-
+app.post('/removelfpost', isLoggedIn, function(req,res){
+	console.log(req.body.post);
+	lostFound.findOneAndRemove({'_id': req.body.post},function(err) {
+    	res.redirect('/lostandfound');
+		});
+});
 app.post('/updateName', isLoggedIn,function(req, res){
-	var currentUser = req.user._id; 
+	var currentUser = req.user._id;
 	var newName = req.body.fName;
 	var newLname = req.body.lName;
 	console.log(newLname);
 	 User.findByIdAndUpdate(req.user._id,
 		        {$set: {'name.first': newName,
 		        	'name.last': newLname}},
-		        
+
 		        //{new: true},
 		        function(err,user){
 		            if(err){
-		                res.send({error :err}) ; 
+		                res.send({error :err}) ;
 		            } else{
-		            	res.redirect(req.get('referer')); ; 
+		            	res.redirect(req.get('referer')); ;
 		            }
 		        });
 });
 
 app.post('/updateBirthday', isLoggedIn,function(req, res){
-	var currentUser = req.user._id; 
+	var currentUser = req.user._id;
 	var newDate = moment().format();
-	var bday = new Date(req.body.year, req.body.month, req.body.day);
+	var bday = new Date(req.body.year, req.body.month - 1, req.body.day);
 	console.log(newDate);
 	 User.findByIdAndUpdate(req.user._id,
 		        {$set: {'birthday': bday}},
-		        
+
 		        //{new: true},
 		        function(err,user){
 		            if(err){
-		                res.send({error :err}) ; 
+		                res.send({error :err}) ;
 		            } else{
-		            	res.redirect(req.get('referer')); 
+		            	res.redirect(req.get('referer'));
 		            }
 		        });
 });
@@ -221,29 +227,29 @@ app.post('/updatePassword', isLoggedIn,function(req, res){
 	var password = req.body.password;
 	 User.findByIdAndUpdate(req.user._id,
 		        {$set: {'local.password': generateHash(password)}},
-		        
+
 		        //{new: true},
 		        function(err,user){
 		            if(err){
-		                res.send({error :err}) ; 
+		                res.send({error :err}) ;
 		            } else{
-		            	res.redirect(req.get('referer'));  
+		            	res.redirect(req.get('referer'));
 		            }
 		        });
 });
 
 app.post('/updateVisibility', isLoggedIn,function(req, res){
-	var currentUser = req.user._id; 
+	var currentUser = req.user._id;
 	var newVisibility = req.body.visibility;
 	 User.findByIdAndUpdate(req.user._id,
 		        {$set: {'visibility': newVisibility}},
-		        
+
 		        //{new: true},
 		        function(err,user){
 		            if(err){
-		                res.send({error :err}) ; 
+		                res.send({error :err}) ;
 		            } else{
-		            	res.redirect(req.get('referer'));  
+		            	res.redirect(req.get('referer'));
 		            }
 		        });
 });

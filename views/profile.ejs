@@ -64,8 +64,10 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 					<form action ="/acceptRequest" method = "post">
 						<input type="hidden" name="requester" value="<%=user.requester%>" </p>
 						<button type="submit" class="w3-green"> Accept Request </button>
-						<button type="submit" class="w3-red"> Deny Request </button>
-					</form>
+            </form>
+            <form action ="//denyRequest" method = "post">
+            <button type="submit" class="w3-red"> Deny Request </button>
+          </form>
 				</div>
 					<% }) %>
 				</div>
@@ -224,7 +226,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 			<div id="Schedule" class="tabcontent">
 
         	<% if(owner._id == user._id){%>
-				  <button onclick="document.getElementById('id02').style.display='block'" class="w3-button w3-white">Create Schedule</button>
+				  <button onclick="document.getElementById('id02').style.display='block'" class="w3-button w3-white">Add Courses</button>
 					<br><br>
 					<div id="id02" class="w3-modal">
 						<div class="w3-modal-content">

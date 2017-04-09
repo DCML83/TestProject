@@ -3,6 +3,7 @@ var LocalStrategy   = require('passport-local').Strategy;
 
 // load up the user model
 var User            = require('../app/model/user').User;
+var moment = require('moment');
 
 // expose this function to our app using module.exports
 module.exports = function(passport) {
@@ -77,7 +78,6 @@ module.exports = function(passport) {
         // asynchronous
         // User.findOne wont fire unless data is sent back
         process.nextTick(function() {
-
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
         User.findOne({ 'local.email' :  email }, function(err, user) {
@@ -101,7 +101,7 @@ module.exports = function(passport) {
                 newUser.Year = req.body.schoolyear;
                 newUser.gender = req.body.gender;
                 console.log(req.body.year, req.body.month, req.body.day);
-                var bday = new Date(req.body.year, req.body.month, req.body.day);
+                var bday = new Date(req.body.year, req.body.month - 1 , req.body.day);
                 console.log(bday);
                 newUser.birthday = bday;
                 // save the user
