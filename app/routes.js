@@ -524,12 +524,13 @@ app.get('/data/:id', function(req, res){
 	app.post('/denyRequest', isLoggedIn, function (req, res){
 		var friendToDeny = req.body.requester;
 		var currentUserId = req.user;
-		currentUserId.denyRequest(friendToDeny, function (err, denied) {
+		currentUserId.denyRequest(friendToDeny._id, function (err, denied) {
 			res.redirect(req.get('referer'));
 		});
 	});
 
 	app.post('/acceptRequest', isLoggedIn, function (req, res){
+		console.log(req.body.requester);
 		var friendToAdd = req.body.requester;
 		var currentUserId = req.user;
 		currentUserId.acceptRequest(friendToAdd, function (err, friendship) {
@@ -593,7 +594,7 @@ app.get('/data/:id', function(req, res){
                     throw err;
                     return done(null, user);
                 });
-			res.render('index.ejs', {});
+								res.redirect('/');
         });
 	});
 

@@ -47,11 +47,12 @@
     					<p>  <%=user.requester%> sending you a friend request</p>
     					<time id="then" datetime="<%= user.dateAccepted%>"></time>
               <form action ="/acceptRequest" method = "post">
-                <input type="hidden" name="requester" value="<%=user.requester%>" </p>
-                <button type="submit" class="w3-green"> Accept Request </button>
+    						<input type="hidden" name="requester" value="<%=user.requester%>">
+    						<button type="submit" class="w3-green"> Accept Request </button>
                 </form>
-                <form action ="//denyRequest" method = "post">
-                <button type="submit" class="w3-red"> Deny Request </button>
+                <form action ="/denyRequest" method = "post">
+                  <input type="hidden" name="requester" value="<%=user.requester%>">
+                  <button type="submit" class="w3-red"> Deny Request </button>
               </form>
     				</div>
     					<% }) %>
