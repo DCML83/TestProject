@@ -79,20 +79,22 @@
             <input type="text" placeholder="SEARCH..."class="search" id='searchtext'/>
             <button type="button"class="button" id='friendsearch'>Search</button>
         </div>
+				<div id='searchresult' class="w3-contianer w3-card-3" style="margin-top:50px">
+				</div>
             <div class="w3-contianer w3-card-3" style="margin-top:50px">
               <h4 class='w3-text-white'> <b>suggested Friends<b></h4>
               <%if(suggestedFriends.length !=0){%>
 
               <% suggestedFriends.forEach(function(friend) {%>
               <form action="/requestFriend" method="post">
-                <a href='/profile/<%=friend.local.email%>'><%=friend.name.first %> <%=friend.name.last%></a>
-              <input type ='hidden' name='email' value='<%=friend.local.email%>'/>
-              <button type="submit"> Add Friend </button>
+              		<a href='/profile/<%=friend.local.email%>'><%=friend.name.first %> <%=friend.name.last%></a>
+              		<input type ='hidden' name='email' value='<%=friend.local.email%>'/>
+              		<button type="submit"> Add Friend </button>
               </form>
               <% }) %>
               <%} else{ %>
                 <p class="w3-text-grey"> No Suggested Friends<p>
-                  <%}%>
+                <%}%>
             </div>
             <div class="w3-contianer w3-card-3 w3-margin-top">
               <h4 class='w3-text-white'> <b>All Friends<b></h4>
@@ -117,11 +119,15 @@ $('#friendsearch').click(function(event){
   var info ={search:searchText};
   socket.emit('searchfriend', info);
   $('#searchtext').val('')
+	$('#searchresult').children().remove();
   return false
   });
 
-socket.on('searchfriend', function(info){
-  drawRect(info.totalVote, info.Options,click);
+socket.on('searchfriend', function(userlist){
+  userlist.forEach(function(user){
+		console.log(user.name.first);
+			$('#searchresult').append("<a href='/profile/"+user.local.email+" '>"+user.name.first+"</a><br>");
+	});
   });
 
 });

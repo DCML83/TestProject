@@ -190,7 +190,7 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 			 <time id="then" class="w3-right w3-opacity" datetime="<%= post.date%>"></time>
 			 <h4><a href='/profile/<%=post.postby.local.email%>'><%=post.postby.name.first%> <%=post.postby.name.last%></a></h4><br>
 			 <hr class="w3-clear"></hr>
-			 <div style='width:100px;'><%= post.body %></div>
+			 <p><%= post.body %></p>
 			 <!-- <img src="<%=post.image%>" style="width:100%" class="w3-margin-bottom"> -->
 			 <div id ="comment_area<%=index%>"  class='w3-card w3-white w3-margin' style='width:100%;'>
 				 <% post.comments.forEach(function(comments){%>
@@ -273,18 +273,6 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Open Sans", sans-serif}
 	</div>
 
 
-<script>
-
-// Used to toggle the menu on smaller screens when clicking on the menu button
-function openNav() {
-    var x = document.getElementById("navDemo");
-    if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-    } else {
-        x.className = x.className.replace(" w3-show", "");
-    }
-}
-</script>
 
 <script>
 $(function(){
@@ -325,7 +313,6 @@ $(document).ready(function(){
   $('#resume').hide();
   $('#posting').hide();
   $('#scheduler_here').hide()
-  console.log($('#resume').attr('src') )
   if ('<%=owner._id%>'== '<%=user._id%>'){
       $('#resume').show();
       $('#scheduler_here').show();

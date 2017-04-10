@@ -7,6 +7,8 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="CSS/Group.css">
 <script src="JS/momentjs.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 </head>
 
 <div class="w3-top w3-moblie">
@@ -66,9 +68,12 @@
 
 <div id="main"class="w3-card-2" style="max-width:1400px;margin-top:80px">
 <div id="SearchBar">
-    <input type="text" placeholder="Search..."class="search" />
-    <button type="button"class="fa fa-search"style="background-color: whitesmoke; height:25px; width:35px; border-radius: 2px;"></button>
-    <div id="createGroup">
+    <input type="text" placeholder="Search..."class="search" id='searchtext'>
+    <button type="button"class="fa fa-search" id='searchBtn'style="background-color: whitesmoke; height:25px; width:35px; border-radius: 2px;"></button>
+<div id='searchresult'>
+
+</div>
+		<div id="createGroup">
         <button type="button" class="otherbutton" id="myBtn">Create Group</button><br>
     </div>
 
@@ -102,10 +107,26 @@
 					<% }) %>
 				</div>
 
-            <div id="suggested">
-                <h1>Suggested Groups</h1>
-            </div>
-
     </div>
+		<script>
+		$(function(){
+		var socket = io().connect();
+		$('#searchBtn').click(function(event){
+		  var searchText= $('#searchtext').val();
+		  var info ={search:searchText};
+		  socket.emit('searchgroup', info);
+		  $('#searchtext').val('')
+			$('#searchresult').children().remove();
+		  return false
+		  });
+
+		socket.on('searchgroup', function(grouplist){
+		  grouplist.forEach(function(group){
+					$('#searchresult').append("<a href='/group/"+group.name+" '>"+group.name+"</a><br>");
+			});
+		  });
+
+		});
+		</script>
 </body>
 </html>

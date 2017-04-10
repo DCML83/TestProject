@@ -95,7 +95,7 @@ app.get('/group/:email', isLoggedIn, function(req, res){
 		console.log(g);
 			req.user.getReceivedRequests(function(err,request){
 				console.log(g.posts);
-			res.render('Group-profile.ejs',{
+			res.render('group-profile.ejs',{
 					user:req.user,
 					group:g,
 					postlist:g.posts,
@@ -150,7 +150,7 @@ app.get('/group/:email', isLoggedIn, function(req, res){
 		var tmp_path = req.file.path;
 		var mimetype = req.file.mimetype.split("/");
 		var extension = mimetype[1];
-		var name  = md5(req.file.orignalname);
+		var name  = md5(req.file.filename);
 		destination ='upload/lostFound/' + name+"."+extension;
 		var target_path = rootpath + '/public/'+destination;
 		var src = fs.createReadStream(tmp_path);
@@ -190,7 +190,7 @@ app.post('/edit_profile_image', type, isLoggedIn, function(req,res){
 	var tmp_path = req.file.path;
 	var mimetype = req.file.mimetype.split("/");
 	var extension = mimetype[1];
-	var name  = md5(req.file.orignalname);
+	var name  = req.user._id + "_profile";
 	destination ='upload/profile/' + name+"."+extension;
 	var target_path = rootpath + '/public/'+destination;
 	var src = fs.createReadStream(tmp_path);
@@ -310,12 +310,12 @@ app.post('/saveDate', isLoggedIn, function(req, res, done){
 		});
 
 });
-var pdf=upload.single('pdf')
+var pdf=upload.single('pdf');
 app.post('/uploadresume', pdf, isLoggedIn, function(req,res){
 	var tmp_path = req.file.path;
 	var mimetype = req.file.mimetype.split("/");
 	var extension = mimetype[1];
-	var name  = md5(req.file.orignalname);
+	var name  = req.user._id+"_resume";
 	destination ='upload/profile/' + name+"."+extension;
 	var target_path = rootpath + '/public/'+destination;
 	var src = fs.createReadStream(tmp_path);
@@ -426,6 +426,7 @@ app.get('/data/:id', function(req, res){
 		req.logout();
 		res.redirect('/');
 	});
+
 	app.get('/coursepoll', isLoggedIn,function(req,res){
 		var list=[];
 		list = req.user.friends.concat(req.user._id);
@@ -465,6 +466,10 @@ app.get('/data/:id', function(req, res){
 
 
 	app.post('/createpoll', isLoggedIn, function(req, res){
+		if (req.body.course ==''){
+			res.redirect(req.get("referer"));
+		}
+		else{
 		var options= req.body.options_value.split("||");
 		var newPoll = Poll();
 		 newPoll.postby =req.user._id;
@@ -484,6 +489,7 @@ app.get('/data/:id', function(req, res){
 			 	res.redirect(req.get("referer"));
 			 }
 			});
+		}
 		});
 	app.post('/post', isLoggedIn, function(req,res, done){
 		User.findOne({'local.email':req.body.email}, function(err, u){
@@ -524,11 +530,22 @@ app.get('/data/:id', function(req, res){
 	app.post('/denyRequest', isLoggedIn, function (req, res){
 		var friendToDeny = req.body.requester;
 		var currentUserId = req.user;
-		currentUserId.denyRequest(friendToDeny._id, function (err, denied) {
-			res.redirect(req.get('referer'));
+		currentUserId.denyRequest(friendToDeny, function (err, denied) {
 		});
 	});
 
+	app.post('/joingroup', isLoggedIn,function(req,res){
+		Group.findOne({'_id':req.body.id},function(err, group){
+			group.members.push(req.user._id);
+			User.findOne({'_id':req.user._id},function(err,user){
+				user.group.push(group._id);
+				group.save();
+				user.save();
+				res.redirect(req.get('referer'));
+			});
+		});
+
+	});
 	app.post('/acceptRequest', isLoggedIn, function (req, res){
 		console.log(req.body.requester);
 		var friendToAdd = req.body.requester;
@@ -552,7 +569,6 @@ app.get('/data/:id', function(req, res){
 		if(req.user.local.active){
 			  res.redirect("/profile");}
 			else {
-				res.render('profile-temp.ejs', {});
 					host = req.get('host');
 					link ="http://"+req.get('host')+"/verify?id="+req.user._id;
 					mailOptions = {
@@ -573,6 +589,7 @@ app.get('/data/:id', function(req, res){
 					      console.log(error);
 
 					    }else{
+								res.render('profile-temp.ejs', {});
 					      console.log("Message sent: " + res.message);
 					    }
 					  });
@@ -665,12 +682,41 @@ app.get('/data/:id', function(req, res){
 	});
 
 	socket.on('searchfriend', function(msg){
-		console.log(msg);
-		User.find({$or:[{'name.first': {$regex : /c/}},{'name.last' : {$regex : /msg.search$/}}]},function(err,user){
-			console.log(user);
+		var userlist=[];
+		var patt =new RegExp(msg.search.toUpperCase());
+		User.find({},function(err,users){
+			users.forEach(function(user){
+				var name = user.name.first.toUpperCase() + user.name.last.toUpperCase();
+				n = name.search(patt);
+				console.log(n);
+				if(n != -1){
+					userlist.push(user);
+				}
+
+			});
+
+		JSON.stringify(userlist);
+	io.emit('searchfriend', userlist);
+	});
+});
+
+socket.on('searchgroup', function(msg){
+	var grouplist = [];
+	var patt = new RegExp(msg.search.toUpperCase());
+	Group.find({},function(err,groups){
+		groups.forEach(function(group){
+			var name = group.name.toUpperCase();
+			n = name.search(patt);
+			console.log(n);
+			if(n != -1){
+				grouplist.push(group);
+			}
+
 		});
 
-	io.emit('searchfriend', msg);
+	JSON.stringify(grouplist);
+io.emit('searchgroup', grouplist);
+});
 });
 });
 

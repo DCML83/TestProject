@@ -11,6 +11,8 @@
 <script src="../JS/profileJS.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
 <script src="../JS/momentjs.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 </head>
 <body>
 	<div class="w3-top w3-moblie">
@@ -80,13 +82,15 @@
       <h4><b><%=group.name%></b></h4>
 			<h4>Description</h4>
 			<p><%=group.description%></p>
-			<%  if(group.type == 'public'){%>
-				<form method="post" enctype="multipart/form-data" action="/joingroup">
+			<%  if(group.type == 'public') {%>
+				<% if (group.owner != user._id){%>
+				<form method="post" action="/joingroup" id='joingroup'>
 					<input type='hidden' name="id" value='<%=group._id%>'>
-					<input type="submit" value="join Group">
+					<input type="submit" value="Join Group">
 					</form>
+					<%}%>
 			<%}else{%>
-					<form method="post" enctype="multipart/form-data" action="/requestjoin">
+					<form method="post"  action="/requestjoin" id='requestjoin'>
 						<input type='hidden' name="id" value='<%=group._id%>'>
 						<input type="submit" value="Request">
 						</form>
@@ -147,5 +151,36 @@
 	</div>
 
 </div>
+<script>
+$(document).ready(function(){
+	$('#joingroup').hide();
+	$('#requestjoin').hide();
+	if('<%=group.type%>' == 'public'){
+		if('<%=group.owner%>' != '<%=user._id%>'){
+			if(!findUser()){
+				$('#joingroup').show();
+				$('#tlBox').hide()
+			}else{
+
+			}
+	}
+	}
+	if('<%=group.type%>' == 'private'){
+		if('<%=group.owner%>' != '<%=user._id%>'){
+			$('#requestjoin').show();
+		}
+	}
+});
+
+function findUser(){
+  <% for (var i = 0; i <  group.members.length; i++){ %>
+    if('<%=group.members[i]%>' == '<%=user._id%>'){
+      return true;
+    }
+  <%  } %>
+  return false;
+}
+</script>
+
 </body>
 </html>
